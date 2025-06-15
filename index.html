@@ -252,7 +252,6 @@
 
         .checkbox-item input[type="checkbox"] {
             margin-right: 15px;
-            margin-left: 0px;
             margin-top: 3px;
             width: 20px;
             height: 20px;
@@ -444,7 +443,7 @@
 
             <div class="intro-box">
                 <h3>📋 응답 방법</h3>
-                <ul style="padding-left: 50px;">
+                <ul>
                     <li>각 문항을 읽고 자신에게 해당하는 정도를 선택해주세요</li>
                     <li>정답이 없으니 솔직하게 응답해주세요</li>
                     <li>너무 오래 고민하기보다, 떠오르는 첫 느낌으로 응답해주세요</li>
@@ -453,7 +452,7 @@
 
             <div class="intro-box">
                 <h3>📊 결과 제공</h3>
-                <ul style="padding-left: 50px;">
+                <ul>
                     <li>검사 완료 후 6개 영역별 결과를 제공합니다</li>
                     <li>현재는 파일럿 연구 중이며, 여러분의 참여가 한국형 기준 마련에 도움이 됩니다</li>
                     <li>이 검사는 자기이해를 돕는 참고자료이며, 진단서나 의학적 판단을 위한 도구는 아닙니다</li>
@@ -469,6 +468,7 @@
             </div>
 
             <button class="btn btn-primary" onclick="nextSection()">검사 시작하기</button>
+            <button class="btn btn-warning" onclick="testMode()" style="background: #ffc107; color: #212529; margin-left: 10px;">테스트 모드 (결과 바로보기)</button>
         </div>
 
         <!-- 개인정보 동의 -->
@@ -887,8 +887,8 @@
                 'demo5-section',  // 학력
                 'demo6-section',  // 직업
                 'demo7-section',  // 성적지향성
-                'demo8-section',  // 상담경험
-                'result-section'
+                'demo8-section'   // 상담경험
+                // result-section은 별도 처리
             );
             
             // localStorage에서 저장된 답변 불러오기
@@ -1005,6 +1005,7 @@
 
         // 완료 체크
         function checkCompletion() {
+            console.log('검사 완료 체크 시작');
             const missingQuestions = [];
             const checkFailures = [];
             
@@ -1014,6 +1015,7 @@
                     missingQuestions.push(i);
                 }
             }
+            console.log('누락 문항:', missingQuestions);
             
             // 주의점검 문항 확인
             questions.forEach(q => {
@@ -1021,10 +1023,12 @@
                     checkFailures.push(q.num);
                 }
             });
+            console.log('주의점검 실패:', checkFailures);
             
             // 인구통계 확인
             const demoFields = ['gender', 'age', 'marriage', 'relationship', 'education', 'job', 'orientation', 'counseling'];
             const missingDemo = demoFields.filter(field => !answers[field]);
+            console.log('누락 인구통계:', missingDemo);
             
             // 누락 처리
             if (missingQuestions.length > 0) {
@@ -1035,6 +1039,7 @@
                 alert(`다음 정보를 입력해주세요: ${missingDemo.join(', ')}`);
             } else {
                 // 모두 완료 - 결과 계산
+                console.log('모든 검사 완료! 결과 계산 시작');
                 calculateResults();
             }
         }
@@ -1071,49 +1076,59 @@
 
         // 결과 계산
         function calculateResults() {
-            // 척도별 점수 계산
-            const scales = {
-                "성인식 왜곡": [],
-                "성적 상상의 몰입도": [],
-                "성적 관심의 특이성": [],
-                "성충동 조절 어려움": [],
-                "환상-현실 경계 모호성": [],
-                "성적 책임감 부족": []
-            };
-            
-            questions.forEach(q => {
-                if (q.category !== "사회적 바람직성" && q.category !== "주의점검") {
-                    const score = parseInt(answers[`q${q.num}`]) || 0;
-                    if (scales[q.category]) {
-                        scales[q.category].push(score);
+            console.log('결과 계산 시작');
+            try {
+                // 척도별 점수 계산
+                const scales = {
+                    "성인식 왜곡": [],
+                    "성적 상상의 몰입도": [],
+                    "성적 관심의 특이성": [],
+                    "성충동 조절 어려움": [],
+                    "환상-현실 경계 모호성": [],
+                    "성적 책임감 부족": []
+                };
+                
+                questions.forEach(q => {
+                    if (q.category !== "사회적 바람직성" && q.category !== "주의점검") {
+                        const score = parseInt(answers[`q${q.num}`]) || 0;
+                        if (scales[q.category]) {
+                            scales[q.category].push(score);
+                        }
                     }
+                });
+                
+                // 평균 계산
+                const scaleScores = {};
+                for (const [scale, scores] of Object.entries(scales)) {
+                    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+                    scaleScores[scale] = avg.toFixed(1);
                 }
-            });
-            
-            // 평균 계산
-            const scaleScores = {};
-            for (const [scale, scores] of Object.entries(scales)) {
-                const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-                scaleScores[scale] = avg.toFixed(1);
+                console.log('척도별 점수:', scaleScores);
+                
+                // 결과 저장 (이메일 전송용)
+                lastScaleScores = scaleScores;
+                
+                // 종합 평가
+                const overallResult = getOverallResult(scaleScores);
+                console.log('종합 평가:', overallResult);
+                
+                // 특별 관찰 영역
+                const specialObservations = getSpecialObservations(scaleScores);
+                console.log('특별 관찰:', specialObservations);
+                
+                // 위험 문항 체크
+                const riskItems = checkRiskItems();
+                console.log('위험 문항:', riskItems);
+                
+                // 결과 표시
+                showResults(overallResult, scaleScores, specialObservations, riskItems);
+                
+                // Google Sheets에 저장
+                saveToGoogleSheets();
+            } catch (error) {
+                console.error('결과 계산 중 오류:', error);
+                alert('결과 계산 중 오류가 발생했습니다. 콘솔을 확인해주세요.');
             }
-            
-            // 결과 저장 (이메일 전송용)
-            lastScaleScores = scaleScores;
-            
-            // 종합 평가
-            const overallResult = getOverallResult(scaleScores);
-            
-            // 특별 관찰 영역
-            const specialObservations = getSpecialObservations(scaleScores);
-            
-            // 위험 문항 체크
-            const riskItems = checkRiskItems();
-            
-            // 결과 표시
-            showResults(overallResult, scaleScores, specialObservations, riskItems);
-            
-            // Google Sheets에 저장
-            saveToGoogleSheets();
         }
 
         // 종합 평가 판정
@@ -1244,6 +1259,8 @@
 
         // 결과 표시
         function showResults(overall, scores, observations, risks) {
+            console.log('결과 표시 시작');
+            
             // 종합 평가
             document.getElementById('overall-result').innerHTML = `
                 <div class="result-header">
@@ -1311,10 +1328,22 @@
                 document.getElementById('observation-content').innerHTML = obsContent;
             }
             
+            // 현재 섹션 숨기기
+            console.log('현재 섹션 인덱스:', currentSection);
+            const allSections = document.querySelectorAll('.section');
+            allSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
             // 결과 섹션 표시
-            document.getElementById(sectionOrder[currentSection]).classList.remove('active');
-            document.getElementById('result-section').classList.add('active');
-            window.scrollTo(0, 0);
+            console.log('결과 섹션 표시');
+            const resultSection = document.getElementById('result-section');
+            if (resultSection) {
+                resultSection.classList.add('active');
+                window.scrollTo(0, 0);
+            } else {
+                console.error('결과 섹션을 찾을 수 없습니다');
+            }
         }
 
         // 척도 수준 판정
@@ -1524,7 +1553,7 @@
         function saveToGoogleSheets() {
             // Google Apps Script URL이 제공되면 아래 주석 해제하고 URL 입력
             /*
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbw5LJXjhO0I77G7wse9e3541oIfjPJ9KdpCiyA_SUc2vAQ314ZBq57AUazhUq5S1rF-/exec';
+            const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
             
             // 데이터 준비
             const data = {
@@ -1547,6 +1576,37 @@
             console.log('Google Sheets 저장 기능은 URL 설정 후 사용 가능합니다.');
         }
         
+        // 테스트 모드
+        function testMode() {
+            console.log('테스트 모드 시작');
+            
+            // 모든 문항에 무작위 점수 입력
+            for(let i = 1; i <= 44; i++) {
+                if (i === 15) {
+                    answers[`q${i}`] = 3; // 주의점검 문항
+                } else if (i === 35) {
+                    answers[`q${i}`] = 4; // 주의점검 문항
+                } else {
+                    answers[`q${i}`] = Math.floor(Math.random() * 5) + 1; // 1-5 무작위
+                }
+            }
+            
+            // 인구통계 입력
+            answers.gender = '남성';
+            answers.age = '25-29세';
+            answers.marriage = '미혼';
+            answers.relationship = '현재 연애 중';
+            answers.education = '대학 졸업';
+            answers.job = '직장인';
+            answers.orientation = '이성애자';
+            answers.counseling = '없음';
+            
+            console.log('테스트 답변 생성 완료:', answers);
+            
+            // 바로 결과 계산
+            calculateResults();
+        }
+        
         // 결과 다운로드
         function downloadResults() {
             const resultText = generateTextResult();
@@ -1554,7 +1614,7 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `성건강검사결과_${new Date().toLocaleDateString('ko-KR').replace(/\./g, '')}.txt`;
+            a.download = `나의 성, 문제없을까?_${new Date().toLocaleDateString('ko-KR').replace(/\./g, '')}.txt`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -1564,7 +1624,7 @@
         // 텍스트 결과 생성
         function generateTextResult() {
             const result = generateDetailedResult();
-            let text = '나의 성, 문제없을까? 결과\n';
+            let text = '나의 성, 문제없을까?\n';
             text += '=' .repeat(50) + '\n\n';
             text += `검사일시: ${result.test_date}\n\n`;
             
