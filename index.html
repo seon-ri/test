@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 성, 문제없을까?</title>
+    <title>성건강 자가진단 검사</title>
     <!-- EmailJS 직접 로드 -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -28,7 +28,6 @@
             --secondary-color: #2ecc71;
             --danger-color: #e74c3c;
             --warning-color: #f39c12;
-            --warning-light: #ff7979;  /* 더 예쁜 주황색 */
             --success-color: #27ae60;
             --info-color: #3498db;
             --light-bg: #f5f5f5;
@@ -312,8 +311,8 @@
         }
 
         .scale-bar.good { background: var(--success-color); }
-        .scale-bar.caution { background: #ffb142; }  /* 부드러운 노란색 */
-        .scale-bar.warning { background: #ff6b6b; }  /* 부드러운 빨간색 */
+        .scale-bar.caution { background: var(--warning-color); }
+        .scale-bar.warning { background: #ff6b6b; }
         .scale-bar.danger { background: var(--danger-color); }
 
         /* 특별관찰영역 */
@@ -343,87 +342,21 @@
             margin-bottom: 5px;
         }
 
-        /* 이메일 입력 - 개선된 디자인 */
+        /* 이메일 입력 */
         .email-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 30px;
-            margin-top: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            color: white;
-            text-align: center;
-        }
-
-        .email-section h3 {
-            color: white;
-            font-size: 28px;
-            margin-bottom: 15px;
-        }
-
-        .email-section p {
-            font-size: 18px;
-            margin-bottom: 25px;
-            opacity: 0.95;
-        }
-
-        .email-benefit {
-            display: flex;
-            justify-content: space-around;
-            margin: 25px 0;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .benefit-item {
-            flex: 1;
-            min-width: 150px;
-            padding: 15px;
-            background: rgba(255,255,255,0.2);
+            background: #e3f2fd;
             border-radius: 8px;
-            backdrop-filter: blur(10px);
-        }
-
-        .benefit-item h4 {
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-
-        .benefit-item p {
-            font-size: 14px;
-            margin: 0;
-            opacity: 0.9;
+            padding: 20px;
+            margin-top: 30px;
         }
 
         .email-input {
             width: 100%;
-            max-width: 400px;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 50px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
             font-size: 16px;
-            margin: 20px auto;
-            display: block;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .btn-cta {
-            background: #2ecc71;
-            color: white;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 50px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(46,204,113,0.4);
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .btn-cta:hover {
-            background: #27ae60;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(46,204,113,0.5);
+            margin-bottom: 15px;
         }
 
         /* 반응형 */
@@ -503,7 +436,7 @@
     <div class="container">
         <!-- 검사 소개 -->
         <div class="section active" id="intro-section">
-            <h1>나의 성, 문제없을까?</h1>
+            <h1>성건강 자가진단 검사</h1>
             <div class="intro-box">
                 <p>본 검사는 여러분의 성건강 수준을 확인하는 자가진단 도구입니다.</p>
             </div>
@@ -830,7 +763,7 @@
 
         <!-- 결과 섹션 -->
         <div class="section" id="result-section">
-            <h1>나의 성, 문제없을까? - 검사 결과</h1>
+            <h1>검사 결과</h1>
             
             <!-- 종합 평가 -->
             <div class="result-section" id="overall-result">
@@ -873,7 +806,6 @@
 
             <div class="button-group">
                 <button class="btn btn-secondary" onclick="location.reload()">처음부터 다시</button>
-                <button class="btn btn-info" onclick="downloadResults()" style="background: #17a2b8; color: white;">결과 다운로드</button>
             </div>
         </div>
     </div>
@@ -953,8 +885,8 @@
                 'demo5-section',  // 학력
                 'demo6-section',  // 직업
                 'demo7-section',  // 성적지향성
-                'demo8-section'   // 상담경험
-                // result-section은 별도 처리
+                'demo8-section',  // 상담경험
+                'result-section'
             );
             
             // localStorage에서 저장된 답변 불러오기
@@ -1071,7 +1003,6 @@
 
         // 완료 체크
         function checkCompletion() {
-            console.log('검사 완료 체크 시작');
             const missingQuestions = [];
             const checkFailures = [];
             
@@ -1081,7 +1012,6 @@
                     missingQuestions.push(i);
                 }
             }
-            console.log('누락 문항:', missingQuestions);
             
             // 주의점검 문항 확인
             questions.forEach(q => {
@@ -1089,12 +1019,10 @@
                     checkFailures.push(q.num);
                 }
             });
-            console.log('주의점검 실패:', checkFailures);
             
             // 인구통계 확인
             const demoFields = ['gender', 'age', 'marriage', 'relationship', 'education', 'job', 'orientation', 'counseling'];
             const missingDemo = demoFields.filter(field => !answers[field]);
-            console.log('누락 인구통계:', missingDemo);
             
             // 누락 처리
             if (missingQuestions.length > 0) {
@@ -1105,7 +1033,6 @@
                 alert(`다음 정보를 입력해주세요: ${missingDemo.join(', ')}`);
             } else {
                 // 모두 완료 - 결과 계산
-                console.log('모든 검사 완료! 결과 계산 시작');
                 calculateResults();
             }
         }
@@ -1142,59 +1069,49 @@
 
         // 결과 계산
         function calculateResults() {
-            console.log('결과 계산 시작');
-            try {
-                // 척도별 점수 계산
-                const scales = {
-                    "성인식 왜곡": [],
-                    "성적 상상의 몰입도": [],
-                    "성적 관심의 특이성": [],
-                    "성충동 조절 어려움": [],
-                    "환상-현실 경계 모호성": [],
-                    "성적 책임감 부족": []
-                };
-                
-                questions.forEach(q => {
-                    if (q.category !== "사회적 바람직성" && q.category !== "주의점검") {
-                        const score = parseInt(answers[`q${q.num}`]) || 0;
-                        if (scales[q.category]) {
-                            scales[q.category].push(score);
-                        }
+            // 척도별 점수 계산
+            const scales = {
+                "성인식 왜곡": [],
+                "성적 상상의 몰입도": [],
+                "성적 관심의 특이성": [],
+                "성충동 조절 어려움": [],
+                "환상-현실 경계 모호성": [],
+                "성적 책임감 부족": []
+            };
+            
+            questions.forEach(q => {
+                if (q.category !== "사회적 바람직성" && q.category !== "주의점검") {
+                    const score = parseInt(answers[`q${q.num}`]) || 0;
+                    if (scales[q.category]) {
+                        scales[q.category].push(score);
                     }
-                });
-                
-                // 평균 계산
-                const scaleScores = {};
-                for (const [scale, scores] of Object.entries(scales)) {
-                    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-                    scaleScores[scale] = avg.toFixed(1);
                 }
-                console.log('척도별 점수:', scaleScores);
-                
-                // 결과 저장 (이메일 전송용)
-                lastScaleScores = scaleScores;
-                
-                // 종합 평가
-                const overallResult = getOverallResult(scaleScores);
-                console.log('종합 평가:', overallResult);
-                
-                // 특별 관찰 영역
-                const specialObservations = getSpecialObservations(scaleScores);
-                console.log('특별 관찰:', specialObservations);
-                
-                // 위험 문항 체크
-                const riskItems = checkRiskItems();
-                console.log('위험 문항:', riskItems);
-                
-                // 결과 표시
-                showResults(overallResult, scaleScores, specialObservations, riskItems);
-                
-                // Google Sheets에 저장
-                saveToGoogleSheets();
-            } catch (error) {
-                console.error('결과 계산 중 오류:', error);
-                alert('결과 계산 중 오류가 발생했습니다. 콘솔을 확인해주세요.');
+            });
+            
+            // 평균 계산
+            const scaleScores = {};
+            for (const [scale, scores] of Object.entries(scales)) {
+                const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+                scaleScores[scale] = avg.toFixed(1);
             }
+            
+            // 결과 저장 (이메일 전송용)
+            lastScaleScores = scaleScores;
+            
+            // 종합 평가
+            const overallResult = getOverallResult(scaleScores);
+            
+            // 특별 관찰 영역
+            const specialObservations = getSpecialObservations(scaleScores);
+            
+            // 위험 문항 체크
+            const riskItems = checkRiskItems();
+            
+            // 결과 표시
+            showResults(overallResult, scaleScores, specialObservations, riskItems);
+            
+            // Google Sheets에 저장
+            saveToGoogleSheets();
         }
 
         // 종합 평가 판정
@@ -1325,8 +1242,6 @@
 
         // 결과 표시
         function showResults(overall, scores, observations, risks) {
-            console.log('결과 표시 시작');
-            
             // 종합 평가
             document.getElementById('overall-result').innerHTML = `
                 <div class="result-header">
@@ -1394,22 +1309,10 @@
                 document.getElementById('observation-content').innerHTML = obsContent;
             }
             
-            // 현재 섹션 숨기기
-            console.log('현재 섹션 인덱스:', currentSection);
-            const allSections = document.querySelectorAll('.section');
-            allSections.forEach(section => {
-                section.classList.remove('active');
-            });
-            
             // 결과 섹션 표시
-            console.log('결과 섹션 표시');
-            const resultSection = document.getElementById('result-section');
-            if (resultSection) {
-                resultSection.classList.add('active');
-                window.scrollTo(0, 0);
-            } else {
-                console.error('결과 섹션을 찾을 수 없습니다');
-            }
+            document.getElementById(sectionOrder[currentSection]).classList.remove('active');
+            document.getElementById('result-section').classList.add('active');
+            window.scrollTo(0, 0);
         }
 
         // 척도 수준 판정
@@ -1617,9 +1520,8 @@
 
         // Google Sheets 저장
         function saveToGoogleSheets() {
-            // Google Apps Script URL이 제공되면 아래 주석 해제하고 URL 입력
-            /*
-            const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+            // Google Apps Script URL이 제공되면 주석 해제
+            // const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
             
             // 데이터 준비
             const data = {
@@ -1627,98 +1529,10 @@
                 ...answers
             };
             
-            fetch(scriptURL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => console.log('데이터 저장 성공'))
-            .catch(error => console.error('데이터 저장 실패:', error));
-            */
-            
-            console.log('Google Sheets 저장 기능은 URL 설정 후 사용 가능합니다.');
-        }
-        
-        // 테스트 모드
-        function testMode() {
-            console.log('테스트 모드 시작');
-            
-            // 모든 문항에 무작위 점수 입력
-            for(let i = 1; i <= 44; i++) {
-                if (i === 15) {
-                    answers[`q${i}`] = 3; // 주의점검 문항
-                } else if (i === 35) {
-                    answers[`q${i}`] = 4; // 주의점검 문항
-                } else {
-                    answers[`q${i}`] = Math.floor(Math.random() * 5) + 1; // 1-5 무작위
-                }
-            }
-            
-            // 인구통계 입력
-            answers.gender = '남성';
-            answers.age = '25-29세';
-            answers.marriage = '미혼';
-            answers.relationship = '현재 연애 중';
-            answers.education = '대학 졸업';
-            answers.job = '직장인';
-            answers.orientation = '이성애자';
-            answers.counseling = '없음';
-            
-            console.log('테스트 답변 생성 완료:', answers);
-            
-            // 바로 결과 계산
-            calculateResults();
-        }
-        
-        // 결과 다운로드
-        function downloadResults() {
-            const resultText = generateTextResult();
-            const blob = new Blob([resultText], { type: 'text/plain;charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `나의성문제없을까_결과_${new Date().toLocaleDateString('ko-KR').replace(/\./g, '')}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        }
-        
-        // 텍스트 결과 생성
-        function generateTextResult() {
-            const result = generateDetailedResult();
-            let text = '나의 성, 문제없을까? - 검사 결과\n';
-            text += '=' .repeat(50) + '\n\n';
-            text += `검사일시: ${result.test_date}\n\n`;
-            
-            text += '【종합 평가】\n';
-            text += result.overall_level + '\n';
-            text += result.overall_content + '\n';
-            text += '권장사항: ' + result.overall_recommendation + '\n\n';
-            
-            text += '【영역별 결과】\n';
-            for (const [scale, score] of Object.entries(lastScaleScores)) {
-                const level = getScaleLevel(parseFloat(score));
-                text += `${scale}: ${score}점\n`;
-                text += `- ${getScaleInterpretation(scale, level)}\n\n`;
-            }
-            
-            if (result.special_observations) {
-                text += '【특별 관찰 영역】\n';
-                const temp = document.createElement('div');
-                temp.innerHTML = result.special_observations;
-                text += temp.textContent + '\n\n';
-            }
-            
-            text += '-' .repeat(50) + '\n';
-            text += '본 검사는 자기이해를 돕는 참고자료입니다.\n';
-            text += '전문적 도움이 필요한 경우 정신건강 전문가와 상담하세요.\n';
-            text += '정신건강 위기상담: 1577-0199\n';
-            
-            return text;
+            // fetch(scriptURL, {
+            //     method: 'POST',
+            //     body: JSON.stringify(data)
+            // });
         }
 
         // localStorage 저장/불러오기 (안전하게 처리)
