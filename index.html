@@ -345,31 +345,51 @@
 
         /* 특별관찰영역 - 개선된 디자인 */
         .special-observation {
-            background: linear-gradient(to right, #fff5f5, #ffe0e0);
-            border-left: 4px solid #ff6b6b;
+            background: linear-gradient(to right, #fff5f0, #fff3e6);
+            border-left: 4px solid #d35400;
             border-radius: 8px;
             padding: 25px;
             margin-top: 30px;
-            box-shadow: 0 3px 15px rgba(255,107,107,0.1);
+            box-shadow: 0 3px 15px rgba(211,84,0,0.1);
         }
 
         .special-observation h3 {
-            color: #c0392b;
+            color: #d35400;
             margin-bottom: 20px;
             font-size: 20px;
         }
 
         .observation-item {
-            margin-bottom: 15px;
-            padding: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
             background: white;
-            border-radius: 5px;
+            border-radius: 8px;
+            border-left: 3px solid #f39c12;
         }
 
         .observation-type {
             font-weight: bold;
-            color: #856404;
-            margin-bottom: 5px;
+            font-size: 16px;
+            color: #e74c3c;
+            margin-bottom: 8px;
+        }
+
+        .observation-item p {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .observation-item p:first-of-type {
+            font-weight: 600;
+            font-size: 15px;
+            color: #2c3e50;
+        }
+
+        .observation-item p:last-of-type {
+            font-weight: 400;
+            font-size: 14px;
+            color: #34495e;
         }
 
         /* 이메일 입력 - 개선된 디자인 */
@@ -1437,19 +1457,19 @@
                         obsContent += `
                             <div class="observation-item">
                                 <div class="observation-type">${obs.type} ${obs.detail}</div>
-                                <p>: ${obs.advice}</p>
+                                <p>${obs.advice}</p>
                             </div>
                         `;
                     });
                 }
                 
                 if (risks.length > 0) {
-                    obsContent += '<h4 style="margin-top: 20px; color: #e74c3c;">주의가 필요한 응답</h4>';
+                    obsContent += '<h4 style="margin-top: 25px; color: #e74c3c; font-size: 18px;">주의가 필요한 응답</h4>';
                     risks.forEach(risk => {
                         obsContent += `
-                            <div class="observation-item" style="background: #ffe6e6;">
-                                <p style="font-size: 14px; margin-bottom: 5px;">"${risk.question}"</p>
-                                <p style="color: #e74c3c;">• ${risk.message}</p>
+                            <div class="observation-item" style="background: #fef9e7; border-left-color: #f39c12;">
+                                <p style="font-weight: 600; color: #d35400; margin-bottom: 8px;">"${risk.question}"</p>
+                                <p style="color: #8b4513;">→ ${risk.message}</p>
                             </div>
                         `;
                     });
@@ -1458,19 +1478,19 @@
                 document.getElementById('observation-content').innerHTML = obsContent;
             }
             
-            // 현재 섹션 숨기기
-            console.log('현재 섹션 인덱스:', currentSection);
+            // 모든 섹션 숨기기
             const allSections = document.querySelectorAll('.section');
             allSections.forEach(section => {
                 section.classList.remove('active');
             });
             
-            // 결과 섹션 표시
-            console.log('결과 섹션 표시');
+            // 결과 섹션 표시 (currentSection 오류 수정)
             const resultSection = document.getElementById('result-section');
             if (resultSection) {
                 resultSection.classList.add('active');
+                currentSection = sectionOrder.length; // 올바른 섹션 인덱스 설정
                 window.scrollTo(0, 0);
+                console.log('결과 섹션 표시 완료');
             } else {
                 console.error('결과 섹션을 찾을 수 없습니다');
             }
