@@ -567,10 +567,8 @@
             <div style="text-align: center;">
                 <button class="btn btn-primary" onclick="nextSection()">검사 시작하기</button>
                 <p style="margin-top: 20px; font-size: 14px; color: #666;">
-                    이전에 작성한 답변이 있나요?<br>
-                    <a href="#" onclick="clearAllData(); return false;" style="color: #e74c3c; text-decoration: underline;">
-                        처음부터 새로 시작하기
-                    </a>
+                    약 15분 정도 소요됩니다.<br>
+                    중간에 나가시면 답변이 저장되지 않습니다.
                 </p>
             </div>
         </div>
@@ -1019,11 +1017,9 @@
                 // result-section은 별도 처리
             );
             
-            // localStorage에서 저장된 답변 불러오기
-            loadAnswers();
-            
-            // 이전 답변 확인
-            checkPreviousAnswers();
+            // localStorage 기능 비활성화 - 문제 해결을 위해 제거
+            // loadAnswers();
+            // checkPreviousAnswers();
         });
 
         // 검사 문항 섹션 생성
@@ -1074,7 +1070,8 @@
         // 답변 선택
         function selectAnswer(questionNum, value) {
             answers[`q${questionNum}`] = value;
-            saveAnswers();
+            // localStorage 저장 기능 비활성화
+            // saveAnswers();
             
             // 자동으로 다음 문항으로
             setTimeout(() => {
@@ -1086,7 +1083,8 @@
         document.addEventListener('change', function(e) {
             if (e.target.type === 'radio' && !e.target.name.startsWith('q')) {
                 answers[e.target.name] = e.target.value;
-                saveAnswers();
+                // localStorage 저장 기능 비활성화
+                // saveAnswers();
                 
                 // 자동으로 다음으로
                 setTimeout(() => {
@@ -1753,18 +1751,11 @@
             calculateResults();
         }
         
-        // 모든 데이터 초기화
+        // 모든 데이터 초기화 (간소화)
         function clearAllData() {
             if (confirm('지금까지 입력한 답변을 모두 지우고 새로 시작하시겠습니까?')) {
                 // 답변 초기화
                 answers = {};
-                
-                // localStorage 삭제
-                try {
-                    localStorage.removeItem('sexualHealthAnswers');
-                } catch (e) {
-                    console.log('localStorage 삭제 실패:', e);
-                }
                 
                 // 모든 라디오 버튼 해제
                 const radios = document.querySelectorAll('input[type="radio"]');
@@ -1780,7 +1771,7 @@
                 currentSection = 0;
                 document.getElementById('intro-section').classList.add('active');
                 
-                alert('모든 답변이 초기화되었습니다. 새로 시작해주세요!');
+                alert('모든 답변이 초기화되었습니다!');
             }
         }
         
@@ -1832,55 +1823,21 @@
             return text;
         }
 
-        // localStorage 저장/불러오기 (안전하게 처리)
+        // localStorage 저장/불러오기 (비활성화)
         function saveAnswers() {
-            if (!useLocalStorage) return;
-            
-            try {
-                if (typeof(Storage) !== "undefined" && window.localStorage) {
-                    localStorage.setItem('sexualHealthAnswers', JSON.stringify(answers));
-                }
-            } catch (e) {
-                console.log('localStorage를 사용할 수 없습니다:', e.message);
-            }
+            // localStorage 기능 비활성화 - 문제 해결을 위해 제거
+            return;
         }
 
         function loadAnswers() {
-            try {
-                if (typeof(Storage) !== "undefined" && window.localStorage) {
-                    const saved = localStorage.getItem('sexualHealthAnswers');
-                    if (saved) {
-                        answers = JSON.parse(saved);
-                        // 저장된 답변 복원
-                        for (const [key, value] of Object.entries(answers)) {
-                            const input = document.querySelector(`input[name="${key}"][value="${value}"]`);
-                            if (input) input.checked = true;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.log('localStorage를 사용할 수 없습니다:', e.message);
-            }
+            // localStorage 기능 비활성화 - 문제 해결을 위해 제거
+            return;
         }
         
-        // 이전 답변 확인
+        // 이전 답변 확인 (비활성화)
         function checkPreviousAnswers() {
-            if (Object.keys(answers).length > 0) {
-                const savedQuestions = Object.keys(answers).filter(key => key.startsWith('q')).length;
-                if (savedQuestions > 0) {
-                    const message = document.createElement('div');
-                    message.style.cssText = 'background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;';
-                    message.innerHTML = `
-                        <p style="margin: 0; color: #1976d2;">
-                            <strong>이전에 작성한 답변이 있습니다.</strong><br>
-                            <small>${savedQuestions}개 문항에 대한 답변이 저장되어 있습니다.</small>
-                        </p>
-                    `;
-                    const introSection = document.getElementById('intro-section');
-                    const firstBox = introSection.querySelector('.intro-box');
-                    introSection.insertBefore(message, firstBox);
-                }
-            }
+            // localStorage 기능 비활성화 - 문제 해결을 위해 제거
+            return;
         }
     </script>
 </body>
