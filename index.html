@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>성건강 자가진단 검사</title>
+    <title>나의 성, 문제없을까?</title>
     <!-- EmailJS 직접 로드 -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -437,7 +437,7 @@
     <div class="container">
         <!-- 검사 소개 -->
         <div class="section active" id="intro-section">
-            <h1>성건강 자가진단 검사</h1>
+            <h1>나의 성, 문제없을까?</h1>
             <div class="intro-box">
                 <p>본 검사는 여러분의 성건강 수준을 확인하는 자가진단 도구입니다.</p>
             </div>
@@ -1564,7 +1564,7 @@
         // 텍스트 결과 생성
         function generateTextResult() {
             const result = generateDetailedResult();
-            let text = '성건강 자가진단 검사 결과\n';
+            let text = '나의 성, 문제없을까? 결과\n';
             text += '=' .repeat(50) + '\n\n';
             text += `검사일시: ${result.test_date}\n\n`;
             
