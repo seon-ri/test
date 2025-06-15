@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>성건강 자가진단 검사</title>
+    <script type="text/javascript">
+        (function() {
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+            script.onload = function() {
+                if (typeof emailjs !== 'undefined') {
+                    emailjs.init("sU-ufg53yRT5YLRdB");
+                    console.log('EmailJS 초기화 완료');
+                }
+            };
+            script.onerror = function() {
+                console.error('EmailJS 스크립트 로드 실패');
+            };
+            document.head.appendChild(script);
+        })();
+    </script>
+    <style>
+        /* CSS 변수로 색상 관리 - 쉽게 수정 가능 */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --success-color: #27ae60;
+            --info-color: #3498db;
+            --light-bg: #f5f5f5;
+            --white: #ffffff;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border-color: #ddd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 섹션 스타일 */
+        .section {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 제목 스타일 */
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        h2 {
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        h3 {
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        /* 소개 박스 */
+        .intro-box {
+            background: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .intro-box h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* 문항 스타일 */
+        .question-container {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-number {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        /* 누락된 문항 스타일 */
+        .missing {
+            border: 2px solid var(--danger-color) !important;
+            background-color: #ffe6e6 !important;
+        }
+
+        .missing-indicator {
+            color: var(--danger-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .missing .missing-indicator {
+            display: block;
+        }
+
+        /* 라디오 버튼 스타일 */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .radio-item:hover {
+            background: #e9ecef;
+            border-color: var(--primary-color);
+        }
+
+        .radio-item input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .radio-item label {
+            cursor: pointer;
+            font-size: 16px;
+            flex: 1;
+        }
+
+        .radio-item input[type="radio"]:checked + label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* 버튼 스타일 */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        /* 체크박스 스타일 */
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 15px;
+            margin-top: 3px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* 결과 스타일 */
+        .result-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-icon {
+            font-size: 30px;
+            margin-right: 15px;
+        }
+
+        /* 척도 그래프 */
+        .scale-item {
+            margin-bottom: 20px;
+        }
+
+        .scale-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .scale-name {
+            font-weight: bold;
+        }
+
+        .scale-score {
+            font-weight: bold;
+        }
+
+        .scale-bar-container {
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scale-bar {
+            height: 100%;
+            transition: width 1s ease-out;
+            border-radius: 15px;
+        }
+
+        .scale-bar.good { background: var(--success-color); }
+        .scale-bar.caution { background: var(--warning-color); }
+        .scale-bar.warning { background: #ff6b6b; }
+        .scale-bar.danger { background: var(--danger-color); }
+
+        /* 특별관찰영역 */
+        .special-observation {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .special-observation h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .observation-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .observation-type {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+
+        /* 이메일 입력 */
+        .email-section {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        /* 반응형 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .radio-item {
+                padding: 12px 15px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* 알림 메시지 */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* 로딩 스피너 */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 검사 소개 -->
+        <div class="section active" id="intro-section">
+            <h1>성건강 자가진단 검사</h1>
+            <div class="intro-box">
+                <p>본 검사는 여러분의 성건강 수준을 확인하는 자가진단 도구입니다.</p>
+            </div>
+
+            <div class="intro-box">
+                <h3>📋 응답 방법</h3>
+                <ul>
+                    <li>각 문항을 읽고 자신에게 해당하는 정도를 선택해주세요</li>
+                    <li>정답이 없으니 솔직하게 응답해주세요</li>
+                    <li>너무 오래 고민하기보다, 떠오르는 첫 느낌으로 응답해주세요</li>
+                </ul>
+            </div>
+
+            <div class="intro-box">
+                <h3>📊 결과 제공</h3>
+                <ul>
+                    <li>검사 완료 후 6개 영역별 결과를 제공합니다</li>
+                    <li>현재는 파일럿 연구 중이며, 여러분의 참여가 한국형 기준 마련에 도움이 됩니다</li>
+                    <li>이 검사는 자기이해를 돕는 참고자료이며, 진단서나 의학적 판단을 위한 도구는 아닙니다</li>
+                    <li>이메일 입력 시 상세 결과지를 발송해드립니다 (선택)</li>
+                </ul>
+            </div>
+
+            <div class="intro-box">
+                <p>※ 모든 응답은 익명으로 처리됩니다.<br>
+                ※ 만 19세 이상만 참여 가능합니다.<br>
+                ※ 약 15분 정도 소요됩니다.<br>
+                <span style="color: #e74c3c;">※ 현재 환경에서는 임시저장이 지원되지 않습니다. 한 번에 완료해주세요.</span></p>
+            </div>
+
+            <button class="btn btn-primary" onclick="nextSection()">검사 시작하기</button>
+        </div>
+
+        <!-- 개인정보 동의 -->
+        <div class="section" id="consent-section">
+            <h2>개인정보 수집 및 이용 동의</h2>
+            
+            <div class="checkbox-item">
+                <input type="checkbox" id="consent1" name="consent1">
+                <label for="consent1">본 검사의 결과는 연구 목적으로만 사용되며, 개인정보는 안전하게 보호됨을 이해했습니다.</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="consent2" name="consent2">
+                <label for="consent2">만 19세 이상임을 확인합니다.</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="consent3" name="consent3">
+                <label for="consent3">검사 참여에 자발적으로 동의합니다.</label>
+            </div>
+
+            <div class="alert alert-danger" id="consent-alert">
+                모든 항목에 동의해주세요.
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+                <button class="btn btn-primary" onclick="checkConsent()">다음</button>
+            </div>
+        </div>
+
+        <!-- 인구통계 (성별, 연령) -->
+        <div class="section" id="demo1-section">
+            <h2>기본 정보</h2>
+            
+            <div class="question-container">
+                <h3>성별</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="gender1" name="gender" value="남성">
+                        <label for="gender1">남성</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gender2" name="gender" value="여성">
+                        <label for="gender2">여성</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gender3" name="gender" value="기타">
+                        <label for="gender3">기타</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+            </div>
+        </div>
+
+        <div class="section" id="demo2-section">
+            <h2>기본 정보</h2>
+            
+            <div class="question-container">
+                <h3>연령</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="age1" name="age" value="19-24세">
+                        <label for="age1">19-24세</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="age2" name="age" value="25-29세">
+                        <label for="age2">25-29세</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="age3" name="age" value="30-34세">
+                        <label for="age3">30-34세</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="age4" name="age" value="35-39세">
+                        <label for="age4">35-39세</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="age5" name="age" value="40-44세">
+                        <label for="age5">40-44세</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="age6" name="age" value="45-49세">
+                        <label for="age6">45-49세</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="age7" name="age" value="50-59세">
+                        <label for="age7">50-59세</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="age8" name="age" value="60세 이상">
+                        <label for="age8">60세 이상</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+            </div>
+        </div>
+
+        <!-- 검사 문항들 (동적으로 생성) -->
+        <div id="question-sections"></div>
+
+        <!-- 나머지 인구통계 -->
+        <div class="section" id="demo3-section">
+            <h2>추가 정보</h2>
+            
+            <div class="question-container">
+                <h3>결혼 상태</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="marriage1" name="marriage" value="미혼">
+                        <label for="marriage1">미혼</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="marriage2" name="marriage" value="기혼">
+                        <label for="marriage2">기혼</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="marriage3" name="marriage" value="이혼·별거">
+                        <label for="marriage3">이혼·별거</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="marriage4" name="marriage" value="사별">
+                        <label for="marriage4">사별</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="marriage5" name="marriage" value="동거 중">
+                        <label for="marriage5">동거 중</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+            </div>
+        </div>
+
+        <div class="section" id="demo4-section">
+            <h2>추가 정보</h2>
+            
+            <div class="question-container">
+                <h3>연애 관계</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="relationship1" name="relationship" value="현재 연애 중">
+                        <label for="relationship1">현재 연애 중</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="relationship2" name="relationship" value="현재 연애하고 있지 않음">
+                        <label for="relationship2">현재 연애하고 있지 않음</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+            </div>
+        </div>
+
+        <div class="section" id="demo5-section">
+            <h2>추가 정보</h2>
+            
+            <div class="question-container">
+                <h3>최종 학력</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="education1" name="education" value="고졸 이하">
+                        <label for="education1">고졸 이하</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="education2" name="education" value="대학 재학">
+                        <label for="education2">대학 재학</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="education3" name="education" value="대학 졸업">
+                        <label for="education3">대학 졸업</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="education4" name="education" value="대학원 이상">
+                        <label for="education4">대학원 이상</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+            </div>
+        </div>
+
+        <div class="section" id="demo6-section">
+            <h2>추가 정보</h2>
+            
+            <div class="question-container">
+                <h3>직업 상태</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="job1" name="job" value="학생">
+                        <label for="job1">학생</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="job2" name="job" value="직장인">
+                        <label for="job2">직장인</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="job3" name="job" value="프리랜서·자영업자">
+                        <label for="job3">프리랜서·자영업자</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="job4" name="job" value="무직">
+                        <label for="job4">무직</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="job5" name="job" value="기타">
+                        <label for="job5">기타</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+            </div>
+        </div>
+
+        <div class="section" id="demo7-section">
+            <h2>추가 정보</h2>
+            
+            <div class="question-container">
+                <h3>성적 지향성</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="orientation1" name="orientation" value="이성애자">
+                        <label for="orientation1">이성애자</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="orientation2" name="orientation" value="동성애자">
+                        <label for="orientation2">동성애자</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="orientation3" name="orientation" value="양성애자">
+                        <label for="orientation3">양성애자</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="orientation4" name="orientation" value="무성애자">
+                        <label for="orientation4">무성애자</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="orientation5" name="orientation" value="기타">
+                        <label for="orientation5">기타</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="orientation6" name="orientation" value="밝히고 싶지 않음">
+                        <label for="orientation6">밝히고 싶지 않음</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+            </div>
+        </div>
+
+        <div class="section" id="demo8-section">
+            <h2>추가 정보</h2>
+            
+            <div class="question-container">
+                <h3>성 관련 전문 상담을 받아본 경험이 있습니까?</h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="counseling1" name="counseling" value="없음">
+                        <label for="counseling1">없음</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="counseling2" name="counseling" value="있음">
+                        <label for="counseling2">있음</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="counseling3" name="counseling" value="밝히고 싶지 않음">
+                        <label for="counseling3">밝히고 싶지 않음</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+                <button class="btn btn-success" onclick="checkCompletion()">검사 완료</button>
+            </div>
+        </div>
+
+        <!-- 결과 섹션 -->
+        <div class="section" id="result-section">
+            <h1>검사 결과</h1>
+            
+            <!-- 종합 평가 -->
+            <div class="result-section" id="overall-result">
+                <!-- 동적으로 생성 -->
+            </div>
+
+            <!-- 척도별 점수 -->
+            <div class="result-section">
+                <h2>영역별 상세 결과</h2>
+                <div id="scale-results">
+                    <!-- 동적으로 생성 -->
+                </div>
+            </div>
+
+            <!-- 특별 관찰 영역 -->
+            <div class="special-observation" id="special-observation" style="display: none;">
+                <h3>【특별 관찰 영역】</h3>
+                <div id="observation-content">
+                    <!-- 동적으로 생성 -->
+                </div>
+            </div>
+
+            <!-- 이메일 전송 -->
+            <div class="email-section">
+                <h3>상세 결과 받기</h3>
+                <p>이메일 주소를 입력하시면 더 자세한 해석과 맞춤형 조언을 보내드립니다.</p>
+                <input type="email" class="email-input" id="email-input" placeholder="이메일 주소 입력">
+                <button class="btn btn-primary" onclick="sendDetailedResult()">상세 결과 받기</button>
+                <div class="loading" id="email-loading">
+                    <div class="spinner"></div>
+                    <p>전송 중...</p>
+                </div>
+                <div class="alert alert-success" id="email-success">
+                    이메일이 성공적으로 전송되었습니다. 받은 편지함을 확인해주세요.
+                </div>
+                <div class="alert alert-danger" id="email-error">
+                    이메일 전송에 실패했습니다. 다시 시도해주세요.
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="location.reload()">처음부터 다시</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let currentSection = 0;
+        let answers = {};
+        let sectionOrder = [];
+        let lastScaleScores = {};  // 결과 저장용
+        
+        // 검사 문항 데이터
+        const questions = [
+            { num: 1, category: "성적 상상의 몰입도", text: "하루에도 여러 번 성적 상상에 빠진다" },
+            { num: 2, category: "성인식 왜곡", text: "술에 취한 상태에서의 동의도 성관계에 충분한 동의로 볼 수 있다." },
+            { num: 3, category: "성적 관심의 특이성", text: "일반적인 성적 상황에서는 흥분을 느끼기 어렵다" },
+            { num: 4, category: "사회적 바람직성", text: "나는 한 번도 거짓말을 한 적이 없다" },
+            { num: 5, category: "성충동 조절 어려움", text: "갑자기 강한 성적 충동이 일어나 제어하기 어려울 때가 있다" },
+            { num: 6, category: "환상-현실 경계 모호성", text: "성적 환상을 실제로 실행해도 문제되지 않는다고 생각한다" },
+            { num: 7, category: "성적 책임감 부족", text: "성적 행동의 책임은 꼭 내가 다 질 필요는 없다" },
+            { num: 8, category: "성적 상상의 몰입도", text: "성적 상상을 시작하면 오래 지속된다" },
+            { num: 9, category: "성적 관심의 특이성", text: "특정한 상황이나 조건이 있어야 성적 만족을 느낀다" },
+            { num: 10, category: "성인식 왜곡", text: "성관계를 시작했다면 중간에 멈추는 것은 옳지 않다." },
+            { num: 11, category: "성충동 조절 어려움", text: "성충동을 느끼면 계획에 없던 성적 행동을 하는 경우가 있다" },
+            { num: 12, category: "사회적 바람직성", text: "나는 부적절한 성적 상상을 한 적이 없다" },
+            { num: 13, category: "환상-현실 경계 모호성", text: "가끔 성적 환상이 현실처럼 느껴진다" },
+            { num: 14, category: "성적 책임감 부족", text: "때로는 명시적 동의 없이도 상대방이 원한다고 확신할 수 있다" },
+            { num: 15, category: "주의점검", text: "이 문항은 확인용입니다. '보통이다'를 선택해주세요", checkValue: 3 },
+            { num: 16, category: "성적 상상의 몰입도", text: "일이나 공부 중에도 성적 상상이 떠오른다" },
+            { num: 17, category: "성인식 왜곡", text: "노출이 심한 옷을 입으면 성적 접근을 어느 정도 예상해야 한다" },
+            { num: 18, category: "성적 관심의 특이성", text: "성적으로 흥분하기 위해 점점 더 새로운 자극이 필요하다" },
+            { num: 19, category: "성충동 조절 어려움", text: "충동적 성행동 후 자주 후회한다" },
+            { num: 20, category: "사회적 바람직성", text: "나는 항상 내 감정을 완벽하게 통제한다" },
+            { num: 21, category: "환상-현실 경계 모호성", text: "성적 환상을 구체적으로 계획해본 적이 있다" },
+            { num: 22, category: "성적 책임감 부족", text: "성적 행동이 법적으로 문제 될 거라고는 잘 생각하지 않는다" },
+            { num: 23, category: "성적 상상의 몰입도", text: "성적 상상을 멈추려 해도 잘 되지 않는다" },
+            { num: 24, category: "성인식 왜곡", text: "친절한 태도는 성적 관심의 표현일 수 있다" },
+            { num: 25, category: "성적 관심의 특이성", text: "내 성적 취향을 다른 사람은 이해하기 어려울 것이다" },
+            { num: 26, category: "성충동 조절 어려움", text: "성적인 충동을 참으면 정서적으로 괴롭다" },
+            { num: 27, category: "사회적 바람직성", text: "나는 성적인 충동을 언제나 쉽게 억제할 수 있다" },
+            { num: 28, category: "환상-현실 경계 모호성", text: "성적 환상을 실행했을 때의 결과를 제대로 생각하지 않는다" },
+            { num: 29, category: "성적 책임감 부족", text: "성적 행동은 옳고 그름의 문제라기보다는 개인 선택이라고 생각한다" },
+            { num: 30, category: "성적 상상의 몰입도", text: "성적 환상이 일상생활이나 업무에 방해가 된다" },
+            { num: 31, category: "성인식 왜곡", text: "연인 사이라면 성관계는 당연한 것이다" },
+            { num: 32, category: "성적 관심의 특이성", text: "특정 물건, 복장, 신체 부위에 강한 성적 흥미를 느낀다" },
+            { num: 33, category: "성충동 조절 어려움", text: "감정적으로 불안할 때 성충동이 더 강해진다" },
+            { num: 34, category: "사회적 바람직성", text: "다른 사람과 달리 성적인 상상을 거의 하지 않는다" },
+            { num: 35, category: "주의점검", text: "이 문항을 읽고 있다면 '약간 그렇다'를 선택해주세요", checkValue: 4 },
+            { num: 36, category: "환상-현실 경계 모호성", text: "성적으로 흥분하면 현실 판단력이 흐려진다" },
+            { num: 37, category: "성적 책임감 부족", text: "성 피해자들이 너무 과민하게 반응하는 경우도 있다고 생각한다" },
+            { num: 38, category: "성적 상상의 몰입도", text: "성적 상상을 할 때 점점 더 강렬해진다" },
+            { num: 39, category: "성인식 왜곡", text: "성적 문제가 생기면 유혹한 쪽에도 책임이 있다" },
+            { num: 40, category: "성적 관심의 특이성", text: "시간이 지날수록 더 특별한 자극이 필요하다" },
+            { num: 41, category: "성충동 조절 어려움", text: "성충동을 느낄 때 다른 활동으로 전환하기 어렵다" },
+            { num: 42, category: "사회적 바람직성", text: "나는 사회적으로 용납되지 않는 것에 흥미를 느낀 적이 없다" },
+            { num: 43, category: "환상-현실 경계 모호성", text: "성적 환상과 현실을 구별하는 것이 어려울 때가 있다" },
+            { num: 44, category: "성적 책임감 부족", text: "성적 행동에서 상대방의 감정보다 내 만족이 우선이다" }
+        ];
+
+        // DOM이 로드되면 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 섹션 순서 설정
+            sectionOrder = [
+                'intro-section',
+                'consent-section',
+                'demo1-section',  // 성별
+                'demo2-section'   // 연령
+            ];
+            
+            // 검사 문항 섹션 생성
+            createQuestionSections();
+            
+            // 나머지 인구통계 섹션 추가
+            sectionOrder.push(
+                'demo3-section',  // 결혼상태
+                'demo4-section',  // 연애관계
+                'demo5-section',  // 학력
+                'demo6-section',  // 직업
+                'demo7-section',  // 성적지향성
+                'demo8-section',  // 상담경험
+                'result-section'
+            );
+            
+            // localStorage에서 저장된 답변 불러오기
+            loadAnswers();
+        });
+
+        // 검사 문항 섹션 생성
+        function createQuestionSections() {
+            const container = document.getElementById('question-sections');
+            
+            questions.forEach((q, index) => {
+                const section = document.createElement('div');
+                section.className = 'section';
+                section.id = `q${q.num}-section`;
+                
+                section.innerHTML = `
+                    <div class="question-container">
+                        <div class="question-number">문항 ${q.num} / ${questions.length}</div>
+                        <div class="missing-indicator">⚠️ 이 문항에 응답해주세요</div>
+                        <div class="question-text">${q.text}</div>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_1" name="q${q.num}" value="1" onchange="selectAnswer(${q.num}, 1)">
+                                <label for="q${q.num}_1">전혀 그렇지 않다</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_2" name="q${q.num}" value="2" onchange="selectAnswer(${q.num}, 2)">
+                                <label for="q${q.num}_2">그렇지 않다</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_3" name="q${q.num}" value="3" onchange="selectAnswer(${q.num}, 3)">
+                                <label for="q${q.num}_3">보통이다</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_4" name="q${q.num}" value="4" onchange="selectAnswer(${q.num}, 4)">
+                                <label for="q${q.num}_4">약간 그렇다</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_5" name="q${q.num}" value="5" onchange="selectAnswer(${q.num}, 5)">
+                                <label for="q${q.num}_5">매우 그렇다</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+                    </div>
+                `;
+                
+                container.appendChild(section);
+                sectionOrder.push(`q${q.num}-section`);
+            });
+        }
+
+        // 답변 선택
+        function selectAnswer(questionNum, value) {
+            answers[`q${questionNum}`] = value;
+            saveAnswers();
+            
+            // 자동으로 다음 문항으로
+            setTimeout(() => {
+                nextSection();
+            }, 300);
+        }
+
+        // 인구통계 답변 저장
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'radio' && !e.target.name.startsWith('q')) {
+                answers[e.target.name] = e.target.value;
+                saveAnswers();
+                
+                // 자동으로 다음으로
+                setTimeout(() => {
+                    nextSection();
+                }, 300);
+            }
+        });
+
+        // 섹션 이동
+        function nextSection() {
+            const sections = document.querySelectorAll('.section');
+            sections[currentSection].classList.remove('active');
+            
+            if (currentSection < sectionOrder.length - 1) {
+                currentSection++;
+                document.getElementById(sectionOrder[currentSection]).classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function previousSection() {
+            if (currentSection > 0) {
+                document.getElementById(sectionOrder[currentSection]).classList.remove('active');
+                currentSection--;
+                document.getElementById(sectionOrder[currentSection]).classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // 동의 확인
+        function checkConsent() {
+            const consent1 = document.getElementById('consent1').checked;
+            const consent2 = document.getElementById('consent2').checked;
+            const consent3 = document.getElementById('consent3').checked;
+            
+            if (consent1 && consent2 && consent3) {
+                nextSection();
+            } else {
+                document.getElementById('consent-alert').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('consent-alert').classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // 완료 체크
+        function checkCompletion() {
+            const missingQuestions = [];
+            const checkFailures = [];
+            
+            // 문항 답변 확인
+            for (let i = 1; i <= questions.length; i++) {
+                if (!answers[`q${i}`]) {
+                    missingQuestions.push(i);
+                }
+            }
+            
+            // 주의점검 문항 확인
+            questions.forEach(q => {
+                if (q.checkValue && answers[`q${q.num}`] && parseInt(answers[`q${q.num}`]) !== q.checkValue) {
+                    checkFailures.push(q.num);
+                }
+            });
+            
+            // 인구통계 확인
+            const demoFields = ['gender', 'age', 'marriage', 'relationship', 'education', 'job', 'orientation', 'counseling'];
+            const missingDemo = demoFields.filter(field => !answers[field]);
+            
+            // 누락 처리
+            if (missingQuestions.length > 0) {
+                goToMissingQuestion(missingQuestions[0]);
+            } else if (checkFailures.length > 0) {
+                goToCheckFailure(checkFailures[0]);
+            } else if (missingDemo.length > 0) {
+                alert(`다음 정보를 입력해주세요: ${missingDemo.join(', ')}`);
+            } else {
+                // 모두 완료 - 결과 계산
+                calculateResults();
+            }
+        }
+
+        // 누락 문항으로 이동
+        function goToMissingQuestion(questionNum) {
+            // 현재 섹션 숨기기
+            document.getElementById(sectionOrder[currentSection]).classList.remove('active');
+            
+            // 해당 문항 섹션 찾기
+            const targetSection = `q${questionNum}-section`;
+            const targetIndex = sectionOrder.indexOf(targetSection);
+            
+            // 해당 섹션으로 이동
+            currentSection = targetIndex;
+            const section = document.getElementById(targetSection);
+            section.classList.add('active');
+            section.classList.add('missing');
+            
+            // 스크롤
+            window.scrollTo(0, 0);
+            
+            // 3초 후 하이라이트 제거
+            setTimeout(() => {
+                section.classList.remove('missing');
+            }, 3000);
+        }
+
+        // 주의점검 실패 문항으로 이동
+        function goToCheckFailure(questionNum) {
+            goToMissingQuestion(questionNum);
+            alert('주의점검 문항입니다. 지시에 따라 응답해주세요.');
+        }
+
+        // 결과 계산
+        function calculateResults() {
+            // 척도별 점수 계산
+            const scales = {
+                "성인식 왜곡": [],
+                "성적 상상의 몰입도": [],
+                "성적 관심의 특이성": [],
+                "성충동 조절 어려움": [],
+                "환상-현실 경계 모호성": [],
+                "성적 책임감 부족": []
+            };
+            
+            questions.forEach(q => {
+                if (q.category !== "사회적 바람직성" && q.category !== "주의점검") {
+                    const score = parseInt(answers[`q${q.num}`]) || 0;
+                    if (scales[q.category]) {
+                        scales[q.category].push(score);
+                    }
+                }
+            });
+            
+            // 평균 계산
+            const scaleScores = {};
+            for (const [scale, scores] of Object.entries(scales)) {
+                const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+                scaleScores[scale] = avg.toFixed(1);
+            }
+            
+            // 결과 저장 (이메일 전송용)
+            lastScaleScores = scaleScores;
+            
+            // 종합 평가
+            const overallResult = getOverallResult(scaleScores);
+            
+            // 특별 관찰 영역
+            const specialObservations = getSpecialObservations(scaleScores);
+            
+            // 위험 문항 체크
+            const riskItems = checkRiskItems();
+            
+            // 결과 표시
+            showResults(overallResult, scaleScores, specialObservations, riskItems);
+            
+            // Google Sheets에 저장
+            saveToGoogleSheets();
+        }
+
+        // 종합 평가 판정
+        function getOverallResult(scores) {
+            const highScores = Object.values(scores).filter(s => parseFloat(s) >= 3.5).length;
+            const veryHighScores = Object.values(scores).filter(s => parseFloat(s) >= 4.5).length;
+            
+            if (veryHighScores > 0) {
+                return {
+                    level: "danger",
+                    icon: "🔴",
+                    title: "위험 - 즉시 개입",
+                    content: "특정 영역에서 성적 인식 및 행동 조절에 매우 높은 수준의 어려움이 나타나고 있습니다. 신속히 전문적 도움이 필요한 상태입니다.",
+                    recommendation: "가까운 정신건강복지센터 즉시 연락, 응급 상황 시 1577-0199 (정신건강 위기상담), 이번 주 내로 전문가 상담 필수"
+                };
+            } else if (highScores >= 3) {
+                return {
+                    level: "warning",
+                    icon: "🟠",
+                    title: "경고 - 상담 권장",
+                    content: "여러 영역에서 동시에 주의 신호가 나타나고 있습니다. 심층적인 자기 탐색 또는 전문가 상담을 권장합니다.",
+                    recommendation: "전문 상담 필요, 미루지 말고 빠른 시일 내 상담 예약"
+                };
+            } else if (highScores >= 1) {
+                return {
+                    level: "caution",
+                    icon: "🟡",
+                    title: "주의 - 관찰 필요",
+                    content: "특정 영역에서 개선이 필요한 부분이 발견되었습니다. 당장 문제가 있는 것은 아니지만, 자기 점검과 예방적 인식이 필요합니다.",
+                    recommendation: "높게 나온 영역을 중심으로 자기 관찰, 필요시 상담 고려"
+                };
+            } else {
+                return {
+                    level: "good",
+                    icon: "🟢",
+                    title: "안정 - 건강한 상태",
+                    content: "전반적으로 건강한 성적 인식과 태도를 보이며, 자율적인 통제력이 양호한 상태입니다. 현재의 건강한 상태를 유지하시기 바랍니다.",
+                    recommendation: "파트너와의 지속적인 소통, 정기적인 자기 성찰, 건강한 관계 유지를 위한 노력 지속"
+                };
+            }
+        }
+
+        // 특별 관찰 영역 체크
+        function getSpecialObservations(scores) {
+            const observations = [];
+            
+            // 위험 조합 체크 (4.0 이상)
+            if (parseFloat(scores["성충동 조절 어려움"]) >= 4.0 && parseFloat(scores["성인식 왜곡"]) >= 4.0) {
+                observations.push({
+                    type: "막 나가는 착각형",
+                    detail: "(충동 조절 어려움 + 성인식 왜곡)",
+                    advice: "확실하지 않으면 꼭 물어보기. 상대의 말과 표정, 몸짓까지 같이 읽는 연습을 해보세요."
+                });
+            }
+            
+            if (parseFloat(scores["성충동 조절 어려움"]) >= 4.0 && parseFloat(scores["환상-현실 경계 모호성"]) >= 4.0) {
+                observations.push({
+                    type: "상상 바로 실행형",
+                    detail: "(충동 조절 어려움 + 환상-현실 경계 모호)",
+                    advice: "환상은 환상으로만. 충동이 올 때는 잠시 자리를 떠나 심호흡하세요."
+                });
+            }
+            
+            if (parseFloat(scores["성적 관심의 특이성"]) >= 4.0 && parseFloat(scores["성충동 조절 어려움"]) >= 4.0) {
+                observations.push({
+                    type: "별난 취향 고집형",
+                    detail: "(성적 관심 특이성 + 충동 조절 어려움)",
+                    advice: "평범한 스킨십도 충분히 좋아요. 일반적인 친밀감을 즐기는 연습을 해보세요."
+                });
+            }
+            
+            if (parseFloat(scores["성적 상상의 몰입도"]) >= 4.0 && parseFloat(scores["환상-현실 경계 모호성"]) >= 4.0) {
+                observations.push({
+                    type: "상상에 푹 빠진형",
+                    detail: "(성적 상상 몰입 + 환상-현실 경계 모호)",
+                    advice: "하루 30분만 상상하기. 알람을 맞춰두고 현실로 돌아오세요."
+                });
+            }
+            
+            if (parseFloat(scores["성인식 왜곡"]) >= 4.0 && parseFloat(scores["성적 책임감 부족"]) >= 4.0) {
+                observations.push({
+                    type: "나만 몰랐어요형",
+                    detail: "(성인식 왜곡 + 성적 책임감 부족)",
+                    advice: "내 행동은 내 책임. 상대방 입장에서 한 번 더 생각해보세요."
+                });
+            }
+            
+            return observations;
+        }
+
+        // 위험 문항 체크
+        function checkRiskItems() {
+            const riskQuestions = [2, 6, 11, 19, 28];
+            const risks = [];
+            
+            riskQuestions.forEach(qNum => {
+                if (parseInt(answers[`q${qNum}`]) >= 4) {
+                    const q = questions.find(q => q.num === qNum);
+                    let message = "";
+                    
+                    switch(qNum) {
+                        case 2:
+                            message = "술 마신 상태에서의 동의는 법적으로도 인정되지 않아요. 맑은 정신일 때, 명확한 의사로만 행동하세요.";
+                            break;
+                        case 6:
+                            message = "실행 전에 '이 행동이 진짜 괜찮을까?'를 스스로에게 꼭 물어보세요. 상상은 머릿속에서 끝내도 충분해요.";
+                            break;
+                        case 11:
+                            message = "'지금 바로 행동해야 하나?'를 한번 멈춰 생각해보세요. 찬물 샤워, 자리 피하기 같은 방법도 도움이 돼요.";
+                            break;
+                        case 19:
+                            message = "반복되는 후회는 패턴을 바꿔야 한다는 신호예요. 언제, 어디서, 어떤 상황에서 충동이 생기는지 기록하고, 그 상황을 미리 피하세요.";
+                            break;
+                        case 28:
+                            message = "행동의 결과는 되돌릴 수 없어요. 법적 문제, 관계 파괴, 상대방의 상처 등 현실의 결과를 먼저 생각해보세요.";
+                            break;
+                    }
+                    
+                    risks.push({
+                        question: q.text,
+                        message: message
+                    });
+                }
+            });
+            
+            return risks;
+        }
+
+        // 결과 표시
+        function showResults(overall, scores, observations, risks) {
+            // 종합 평가
+            document.getElementById('overall-result').innerHTML = `
+                <div class="result-header">
+                    <div class="result-icon">${overall.icon}</div>
+                    <div>
+                        <h2>${overall.title}</h2>
+                        <p>${overall.content}</p>
+                        <p style="margin-top: 10px; font-weight: bold;">${overall.recommendation}</p>
+                    </div>
+                </div>
+            `;
+            
+            // 척도별 점수
+            const scaleResults = document.getElementById('scale-results');
+            scaleResults.innerHTML = '';
+            
+            for (const [scale, score] of Object.entries(scores)) {
+                const level = getScaleLevel(parseFloat(score));
+                const interpretation = getScaleInterpretation(scale, level);
+                
+                scaleResults.innerHTML += `
+                    <div class="scale-item">
+                        <div class="scale-header">
+                            <span class="scale-name">${scale}</span>
+                            <span class="scale-score">${score}점</span>
+                        </div>
+                        <div class="scale-bar-container">
+                            <div class="scale-bar ${level}" style="width: ${(score / 5) * 100}%"></div>
+                        </div>
+                        <p style="margin-top: 10px; color: #666; font-size: 14px;">${interpretation}</p>
+                    </div>
+                `;
+            }
+            
+            // 특별 관찰 영역
+            if (observations.length > 0 || risks.length > 0) {
+                const obsDiv = document.getElementById('special-observation');
+                obsDiv.style.display = 'block';
+                
+                let obsContent = '';
+                
+                if (observations.length > 0) {
+                    observations.forEach(obs => {
+                        obsContent += `
+                            <div class="observation-item">
+                                <div class="observation-type">${obs.type} ${obs.detail}</div>
+                                <p>: ${obs.advice}</p>
+                            </div>
+                        `;
+                    });
+                }
+                
+                if (risks.length > 0) {
+                    obsContent += '<h4 style="margin-top: 20px; color: #e74c3c;">주의가 필요한 응답</h4>';
+                    risks.forEach(risk => {
+                        obsContent += `
+                            <div class="observation-item" style="background: #ffe6e6;">
+                                <p style="font-size: 14px; margin-bottom: 5px;">"${risk.question}"</p>
+                                <p style="color: #e74c3c;">• ${risk.message}</p>
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('observation-content').innerHTML = obsContent;
+            }
+            
+            // 결과 섹션 표시
+            document.getElementById(sectionOrder[currentSection]).classList.remove('active');
+            document.getElementById('result-section').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // 척도 수준 판정
+        function getScaleLevel(score) {
+            if (score <= 2.5) return 'good';
+            if (score <= 3.5) return 'caution';
+            if (score <= 4.4) return 'warning';
+            return 'danger';
+        }
+
+        // 척도별 해석 (간단 버전)
+        function getScaleInterpretation(scale, level) {
+            const interpretations = {
+                "성인식 왜곡": {
+                    good: "성적 상황에서 상대방의 의사를 잘 파악하고 존중합니다. 동의의 중요성을 이해하고 있습니다.",
+                    caution: "때때로 상대방의 신호를 자의적으로 해석하는 경향이 있습니다. 명확한 의사소통이 필요합니다.",
+                    warning: "상대방의 동의와 거부의 신호를 자주 오해합니다. 상대방의 입장을 이해하는 연습이 필요합니다.",
+                    danger: "성적 상황에 대한 인식이 매우 왜곡되어 있습니다. 전문가의 도움이 시급합니다."
+                },
+                "성적 상상의 몰입도": {
+                    good: "성적 상상과 일상생활의 균형을 잘 유지하고 있습니다.",
+                    caution: "성적 환상에 빠지는 시간이 늘어나고 있습니다. 일상 활동에 더 집중해보세요.",
+                    warning: "성적 상상이 일상을 방해할 정도로 과도합니다. 현실 활동을 늘려야 합니다.",
+                    danger: "성적 환상에 지나치게 몰입하여 일상생활에 심각한 지장이 있습니다."
+                },
+                "성적 관심의 특이성": {
+                    good: "일반적인 범위의 성적 관심을 가지고 있습니다.",
+                    caution: "특정한 조건이나 상황을 선호하는 경향이 있습니다. 일반적인 친밀감에서 만족을 느끼기 어려울 수 있습니다.",
+                    warning: "매우 특수한 조건에만 관심을 가집니다. 성적 관심의 폭을 넓힐 필요가 있습니다.",
+                    danger: "극도로 제한적이고 특이한 성적 관심으로 인해 어려움이 예상됩니다."
+                },
+                "성충동 조절 어려움": {
+                    good: "성충동을 적절히 인식하고 조절할 수 있습니다.",
+                    caution: "때때로 충동 조절에 어려움을 겪습니다. 대처 방법을 익히면 도움이 됩니다.",
+                    warning: "성충동 조절에 어려움을 자주 겪고 있습니다. 스스로 관리 방법을 익히거나 도움을 받으면 개선될 수 있습니다.",
+                    danger: "충동 조절이 매우 어려운 상태이며, 부적절한 행동으로 이어질 우려가 있습니다."
+                },
+                "환상-현실 경계 모호성": {
+                    good: "환상과 현실을 명확히 구분하고 있습니다.",
+                    caution: "가끔 환상과 현실의 경계가 분명하지 않습니다.",
+                    warning: "환상과 현실의 경계가 모호해지는 경우가 많습니다. 현실 인식 훈련이 필요합니다.",
+                    danger: "환상과 현실을 자주 혼동하며, 정확한 현실 인식을 위한 전문적 개입이 권장됩니다."
+                },
+                "성적 책임감 부족": {
+                    good: "성적 행동에 대한 책임감과 윤리 의식을 갖추고 있습니다.",
+                    caution: "때때로 책임을 회피하려는 경향이 있습니다. 성숙한 태도가 필요합니다.",
+                    warning: "성적 행동의 결과를 고려하지 않습니다. 책임감 교육이 필요합니다.",
+                    danger: "성적 책임감이 매우 부족하여 자신과 타인에게 해를 끼칠 수 있습니다."
+                }
+            };
+            
+            return interpretations[scale][level];
+        }
+
+        // 이메일 전송
+        function sendDetailedResult() {
+            const email = document.getElementById('email-input').value;
+            if (!email || !email.includes('@')) {
+                alert('올바른 이메일 주소를 입력해주세요.');
+                return;
+            }
+            
+            if (typeof emailjs === 'undefined') {
+                alert('이메일 서비스가 로드되지 않았습니다. 페이지를 새로고침해주세요.');
+                return;
+            }
+            
+            document.getElementById('email-loading').style.display = 'block';
+            
+            // 상세 결과 생성
+            const detailedResult = generateDetailedResult();
+            
+            // EmailJS로 전송
+            emailjs.send("service_idzskep", "template_pqvaobm", {
+                to_email: email,
+                ...detailedResult  // 모든 결과 데이터 전달
+            }).then(function(response) {
+                document.getElementById('email-loading').style.display = 'none';
+                document.getElementById('email-success').classList.add('show');
+                console.log('이메일 전송 성공:', response);
+            }, function(error) {
+                document.getElementById('email-loading').style.display = 'none';
+                document.getElementById('email-error').classList.add('show');
+                console.error('이메일 전송 실패:', error);
+            });
+        }
+
+        // 상세 결과 생성
+        function generateDetailedResult() {
+            const result = {
+                user_name: answers.gender === '남성' ? '선생님' : answers.gender === '여성' ? '선생님' : '고객님',
+                test_date: new Date().toLocaleString('ko-KR'),
+                overall_level: '',
+                overall_content: '',
+                overall_recommendation: '',
+                scale_results: '',
+                special_observations: '',
+                detailed_interpretations: ''
+            };
+            
+            // 이미 계산된 점수 사용
+            const scales = lastScaleScores;
+            const overall = getOverallResult(scales);
+            const observations = getSpecialObservations(scales);
+            
+            // 종합 평가
+            result.overall_level = overall.icon + ' ' + overall.title;
+            result.overall_content = overall.content;
+            result.overall_recommendation = overall.recommendation;
+            
+            // 척도별 결과 HTML
+            let scaleHTML = '';
+            for (const [scale, score] of Object.entries(scales)) {
+                const level = getScaleLevel(parseFloat(score));
+                const levelText = level === 'good' ? '양호' : level === 'caution' ? '주의' : level === 'warning' ? '집중관리' : '즉시개입';
+                const levelColor = level === 'good' ? 'good' : level === 'caution' ? 'caution' : level === 'warning' ? 'warning' : 'danger';
+                
+                scaleHTML += `
+                    <div class="scale-item">
+                        <strong>${scale}</strong>: ${score}점 - <span class="${levelColor}">${levelText}</span><br>
+                        <small>${getScaleInterpretation(scale, level)}</small>
+                    </div>
+                `;
+            }
+            result.scale_results = scaleHTML;
+            
+            // 특별 관찰 영역
+            if (observations.length > 0) {
+                let obsHTML = '';
+                observations.forEach(obs => {
+                    obsHTML += `
+                        <div style="margin: 10px 0;">
+                            <strong>${obs.type}</strong> ${obs.detail}<br>
+                            <em>${obs.advice}</em>
+                        </div>
+                    `;
+                });
+                result.special_observations = obsHTML;
+            }
+            
+            // 상세 해석 생성
+            result.detailed_interpretations = generateDetailedInterpretations(scales);
+            
+            return result;
+        }
+
+        
+        // 상세 해석 생성
+        function generateDetailedInterpretations(scales) {
+            let html = '';
+            
+            for (const [scale, score] of Object.entries(scales)) {
+                const level = getScaleLevel(parseFloat(score));
+                const detailedInfo = getDetailedScaleInfo(scale, level);
+                
+                html += `
+                    <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <h3>${scale} (${score}점)</h3>
+                        <p><strong>상태:</strong> ${detailedInfo.status}</p>
+                        <p><strong>핵심 메시지:</strong> ${detailedInfo.core}</p>
+                        <p><strong>실천 과제:</strong></p>
+                        <ul>${detailedInfo.tasks}</ul>
+                    </div>
+                `;
+            }
+            
+            return html;
+        }
+        
+        // 상세 척도 정보
+        function getDetailedScaleInfo(scale, level) {
+            const info = {
+                "성인식 왜곡": {
+                    good: {
+                        status: "상대방의 의사를 정확히 파악하고 존중합니다. 동의의 중요성을 잘 이해하고 있으며, 건강한 경계를 유지합니다.",
+                        core: "명확한 소통으로 서로를 존중합니다",
+                        tasks: "<li>비언어적 신호도 세심히 관찰하기</li><li>상대방의 편안함 우선시하기</li><li>일상에서도 경청 습관 유지하기</li>"
+                    },
+                    caution: {
+                        status: "때때로 상대방의 신호를 자의적으로 해석하는 경향이 있습니다. 특히 애매한 상황에서 자신에게 유리하게 해석할 위험이 있습니다.",
+                        core: "확실하지 않으면 물어보세요",
+                        tasks: "<li>'괜찮아?'가 아닌 '하고 싶어?' 질문하기</li><li>거절을 자연스럽게 받아들이기 연습</li><li>추측 대신 확인하는 습관 만들기</li>"
+                    },
+                    warning: {
+                        status: "동의와 거부의 신호를 자주 오해하며, 상대방의 불편함을 알아차리지 못합니다.",
+                        core: "당신의 해석이 틀릴 수 있습니다",
+                        tasks: "<li>모든 성적 상황에서 명시적 동의 구하기</li><li>상대방 입장 일기 쓰기 (주 3회)</li><li>성인지 감수성 교육 참여</li>"
+                    },
+                    danger: {
+                        status: "성적 상황에 대한 인식이 심각하게 왜곡되어 있습니다.",
+                        core: "지금 당장 도움이 필요합니다",
+                        tasks: "<li>즉시 전문가 상담 예약</li><li>모든 성적 접근 중단</li><li>인지행동치료 프로그램 등록</li>"
+                    }
+                }
+                // 다른 척도들도 추가...
+            };
+            
+            // 해당 척도와 레벨의 정보 반환
+            return info[scale] && info[scale][level] ? info[scale][level] : {
+                status: "정보를 준비 중입니다.",
+                core: "전문가와 상담하세요.",
+                tasks: "<li>전문가 상담 권장</li>"
+            };
+        }
+
+        // Google Sheets 저장
+        function saveToGoogleSheets() {
+            // Google Apps Script URL이 제공되면 주석 해제
+            // const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+            
+            // 데이터 준비
+            const data = {
+                timestamp: new Date().toISOString(),
+                ...answers
+            };
+            
+            // fetch(scriptURL, {
+            //     method: 'POST',
+            //     body: JSON.stringify(data)
+            // });
+        }
+
+        // localStorage 저장/불러오기 (안전하게 처리)
+        function saveAnswers() {
+            try {
+                if (typeof(Storage) !== "undefined" && window.localStorage) {
+                    localStorage.setItem('sexualHealthAnswers', JSON.stringify(answers));
+                }
+            } catch (e) {
+                console.log('localStorage를 사용할 수 없습니다:', e.message);
+            }
+        }
+
+        function loadAnswers() {
+            try {
+                if (typeof(Storage) !== "undefined" && window.localStorage) {
+                    const saved = localStorage.getItem('sexualHealthAnswers');
+                    if (saved) {
+                        answers = JSON.parse(saved);
+                        // 저장된 답변 복원
+                        for (const [key, value] of Object.entries(answers)) {
+                            const input = document.querySelector(`input[name="${key}"][value="${value}"]`);
+                            if (input) input.checked = true;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log('localStorage를 사용할 수 없습니다:', e.message);
+            }
+        }
+    </script>
+</body>
+</html>
