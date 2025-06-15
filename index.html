@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>성건강 자가진단 검사</title>
+    <!-- EmailJS 직접 로드 -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        (function() {
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-            script.onload = function() {
-                if (typeof emailjs !== 'undefined') {
+        // EmailJS 초기화는 스크립트 로드 후 자동으로
+        window.addEventListener('load', function() {
+            if (typeof emailjs !== 'undefined') {
+                try {
                     emailjs.init("sU-ufg53yRT5YLRdB");
-                    console.log('EmailJS 초기화 완료');
+                    console.log('EmailJS 초기화 성공');
+                } catch (e) {
+                    console.error('EmailJS 초기화 실패:', e);
                 }
-            };
-            script.onerror = function() {
-                console.error('EmailJS 스크립트 로드 실패');
-            };
-            document.head.appendChild(script);
-        })();
+            } else {
+                console.warn('EmailJS를 로드할 수 없습니다. CDN 연결을 확인하세요.');
+            }
+        });
     </script>
     <style>
         /* CSS 변수로 색상 관리 - 쉽게 수정 가능 */
@@ -806,6 +806,7 @@
 
             <div class="button-group">
                 <button class="btn btn-secondary" onclick="location.reload()">처음부터 다시</button>
+                <button class="btn btn-info" onclick="downloadResults()" style="background: #17a2b8; color: white;">결과 다운로드</button>
             </div>
         </div>
     </div>
@@ -1520,8 +1521,9 @@
 
         // Google Sheets 저장
         function saveToGoogleSheets() {
-            // Google Apps Script URL이 제공되면 주석 해제
-            // const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+            // Google Apps Script URL이 제공되면 아래 주석 해제하고 URL 입력
+            /*
+            const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
             
             // 데이터 준비
             const data = {
@@ -1529,10 +1531,67 @@
                 ...answers
             };
             
-            // fetch(scriptURL, {
-            //     method: 'POST',
-            //     body: JSON.stringify(data)
-            // });
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => console.log('데이터 저장 성공'))
+            .catch(error => console.error('데이터 저장 실패:', error));
+            */
+            
+            console.log('Google Sheets 저장 기능은 URL 설정 후 사용 가능합니다.');
+        }
+        
+        // 결과 다운로드
+        function downloadResults() {
+            const resultText = generateTextResult();
+            const blob = new Blob([resultText], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `성건강검사결과_${new Date().toLocaleDateString('ko-KR').replace(/\./g, '')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+        
+        // 텍스트 결과 생성
+        function generateTextResult() {
+            const result = generateDetailedResult();
+            let text = '성건강 자가진단 검사 결과\n';
+            text += '=' .repeat(50) + '\n\n';
+            text += `검사일시: ${result.test_date}\n\n`;
+            
+            text += '【종합 평가】\n';
+            text += result.overall_level + '\n';
+            text += result.overall_content + '\n';
+            text += '권장사항: ' + result.overall_recommendation + '\n\n';
+            
+            text += '【영역별 결과】\n';
+            for (const [scale, score] of Object.entries(lastScaleScores)) {
+                const level = getScaleLevel(parseFloat(score));
+                text += `${scale}: ${score}점\n`;
+                text += `- ${getScaleInterpretation(scale, level)}\n\n`;
+            }
+            
+            if (result.special_observations) {
+                text += '【특별 관찰 영역】\n';
+                const temp = document.createElement('div');
+                temp.innerHTML = result.special_observations;
+                text += temp.textContent + '\n\n';
+            }
+            
+            text += '-' .repeat(50) + '\n';
+            text += '본 검사는 자기이해를 돕는 참고자료입니다.\n';
+            text += '전문적 도움이 필요한 경우 정신건강 전문가와 상담하세요.\n';
+            text += '정신건강 위기상담: 1577-0199\n';
+            
+            return text;
         }
 
         // localStorage 저장/불러오기 (안전하게 처리)
