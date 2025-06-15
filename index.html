@@ -10,14 +10,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나의 성, 문제없을까?</title>
-    <!-- EmailJS 직접 로드 -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         // EmailJS 초기화는 스크립트 로드 후 자동으로
         window.addEventListener('load', function() {
             if (typeof emailjs !== 'undefined') {
                 try {
-                    emailjs.init("sU-ufg53yRT5YLRdB");
+                    emailjs.init("sU-ufg53yRT5YLRdB");  // Public Key 확인 필요
                     console.log('EmailJS 초기화 성공');
                 } catch (e) {
                     console.error('EmailJS 초기화 실패:', e);
@@ -1545,10 +1544,23 @@
             const detailedResult = generateDetailedResult();
             
             // EmailJS로 전송
-            emailjs.send("service_idzskep", "template_pqvaobm", {
+            const templateParams = {
                 to_email: email,
-                ...detailedResult  // 모든 결과 데이터 전달
-            }).then(function(response) {
+                from_name: '나의 성, 문제없을까?',
+                user_name: detailedResult.user_name,
+                test_date: detailedResult.test_date,
+                overall_level: detailedResult.overall_level,
+                overall_content: detailedResult.overall_content,
+                overall_recommendation: detailedResult.overall_recommendation,
+                scale_results: detailedResult.scale_results,
+                special_observations: detailedResult.special_observations || '',
+                detailed_interpretations: detailedResult.detailed_interpretations
+            };
+            
+            console.log('전송할 데이터:', templateParams);
+            
+            emailjs.send("service_ydqsoms", "template_pqvaobm", templateParams)
+            .then(function(response) {
                 document.getElementById('email-loading').style.display = 'none';
                 document.getElementById('email-success').classList.add('show');
                 console.log('이메일 전송 성공:', response);
@@ -1556,6 +1568,7 @@
                 document.getElementById('email-loading').style.display = 'none';
                 document.getElementById('email-error').classList.add('show');
                 console.error('이메일 전송 실패:', error);
+                alert('이메일 전송 실패: ' + JSON.stringify(error));
             });
         }
 
