@@ -1,10 +1,4 @@
-.intro-box ul {
-            padding-left: 40px;
-        }
-        
-        .intro-box li {
-            margin-bottom: 8px;
-        }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -567,11 +561,18 @@
             <div class="intro-box">
                 <p>※ 모든 응답은 익명으로 처리됩니다.<br>
                 ※ 만 19세 이상만 참여 가능합니다.<br>
-                ※ 약 15분 정도 소요됩니다.<br>
-                <span style="color: #e74c3c;">※ 현재 환경에서는 임시저장이 지원되지 않습니다. 한 번에 완료해주세요.</span></p>
+                ※ 약 15분 정도 소요됩니다.</p>
             </div>
 
-            <button class="btn btn-primary" onclick="nextSection()">검사 시작하기</button>
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="nextSection()">검사 시작하기</button>
+                <p style="margin-top: 20px; font-size: 14px; color: #666;">
+                    이전에 작성한 답변이 있나요?<br>
+                    <a href="#" onclick="clearAllData(); return false;" style="color: #e74c3c; text-decoration: underline;">
+                        처음부터 새로 시작하기
+                    </a>
+                </p>
+            </div>
         </div>
 
         <!-- 개인정보 동의 -->
@@ -931,7 +932,9 @@
 
             <div class="button-group">
                 <button class="btn btn-secondary" onclick="location.reload()">처음부터 다시</button>
-                <button class="btn btn-info" onclick="downloadResults()" style="background: #17a2b8; color: white;">결과 다운로드</button>
+                <button class="btn" onclick="downloadResults()" style="background: #17a2b8; color: white;">
+                    📥 결과 다운로드
+                </button>
             </div>
         </div>
     </div>
@@ -942,6 +945,7 @@
         let answers = {};
         let sectionOrder = [];
         let lastScaleScores = {};  // 결과 저장용
+        let useLocalStorage = true;  // localStorage 사용 여부
         
         // 검사 문항 데이터
         const questions = [
@@ -1017,6 +1021,9 @@
             
             // localStorage에서 저장된 답변 불러오기
             loadAnswers();
+            
+            // 이전 답변 확인
+            checkPreviousAnswers();
         });
 
         // 검사 문항 섹션 생성
@@ -1028,38 +1035,36 @@
                 section.className = 'section';
                 section.id = `q${q.num}-section`;
                 
-                section.innerHTML = `
-                    <div class="question-container">
-                        <div class="question-number">문항 ${q.num} / ${questions.length}</div>
-                        <div class="missing-indicator">⚠️ 이 문항에 응답해주세요</div>
-                        <div class="question-text">${q.text}</div>
-                        <div class="radio-group">
-                            <div class="radio-item">
-                                <input type="radio" id="q${q.num}_1" name="q${q.num}" value="1" onchange="selectAnswer(${q.num}, 1)">
-                                <label for="q${q.num}_1">전혀 그렇지 않다</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="q${q.num}_2" name="q${q.num}" value="2" onchange="selectAnswer(${q.num}, 2)">
-                                <label for="q${q.num}_2">그렇지 않다</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="q${q.num}_3" name="q${q.num}" value="3" onchange="selectAnswer(${q.num}, 3)">
-                                <label for="q${q.num}_3">보통이다</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="q${q.num}_4" name="q${q.num}" value="4" onchange="selectAnswer(${q.num}, 4)">
-                                <label for="q${q.num}_4">약간 그렇다</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="q${q.num}_5" name="q${q.num}" value="5" onchange="selectAnswer(${q.num}, 5)">
-                                <label for="q${q.num}_5">매우 그렇다</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="button-group">
-                        <button class="btn btn-secondary" onclick="previousSection()">이전</button>
-                    </div>
-                `;
+                section.innerHTML = '<div class="question-container">' +
+                    '<div class="question-number">문항 ' + q.num + ' / ' + questions.length + '</div>' +
+                    '<div class="missing-indicator">⚠️ 이 문항에 응답해주세요</div>' +
+                    '<div class="question-text">' + q.text + '</div>' +
+                    '<div class="radio-group">' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="q' + q.num + '_1" name="q' + q.num + '" value="1" onchange="selectAnswer(' + q.num + ', 1)">' +
+                            '<label for="q' + q.num + '_1">전혀 그렇지 않다</label>' +
+                        '</div>' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="q' + q.num + '_2" name="q' + q.num + '" value="2" onchange="selectAnswer(' + q.num + ', 2)">' +
+                            '<label for="q' + q.num + '_2">그렇지 않다</label>' +
+                        '</div>' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="q' + q.num + '_3" name="q' + q.num + '" value="3" onchange="selectAnswer(' + q.num + ', 3)">' +
+                            '<label for="q' + q.num + '_3">보통이다</label>' +
+                        '</div>' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="q' + q.num + '_4" name="q' + q.num + '" value="4" onchange="selectAnswer(' + q.num + ', 4)">' +
+                            '<label for="q' + q.num + '_4">약간 그렇다</label>' +
+                        '</div>' +
+                        '<div class="radio-item">' +
+                            '<input type="radio" id="q' + q.num + '_5" name="q' + q.num + '" value="5" onchange="selectAnswer(' + q.num + ', 5)">' +
+                            '<label for="q' + q.num + '_5">매우 그렇다</label>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="button-group">' +
+                    '<button class="btn btn-secondary" onclick="previousSection()">이전</button>' +
+                '</div>';
                 
                 container.appendChild(section);
                 sectionOrder.push(`q${q.num}-section`);
@@ -1748,6 +1753,37 @@
             calculateResults();
         }
         
+        // 모든 데이터 초기화
+        function clearAllData() {
+            if (confirm('지금까지 입력한 답변을 모두 지우고 새로 시작하시겠습니까?')) {
+                // 답변 초기화
+                answers = {};
+                
+                // localStorage 삭제
+                try {
+                    localStorage.removeItem('sexualHealthAnswers');
+                } catch (e) {
+                    console.log('localStorage 삭제 실패:', e);
+                }
+                
+                // 모든 라디오 버튼 해제
+                const radios = document.querySelectorAll('input[type="radio"]');
+                radios.forEach(radio => radio.checked = false);
+                
+                // 모든 체크박스 해제
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => checkbox.checked = false);
+                
+                // 첫 번째 섹션으로 돌아가기
+                const allSections = document.querySelectorAll('.section');
+                allSections.forEach(section => section.classList.remove('active'));
+                currentSection = 0;
+                document.getElementById('intro-section').classList.add('active');
+                
+                alert('모든 답변이 초기화되었습니다. 새로 시작해주세요!');
+            }
+        }
+        
         // 결과 다운로드
         function downloadResults() {
             const resultText = generateTextResult();
@@ -1798,6 +1834,8 @@
 
         // localStorage 저장/불러오기 (안전하게 처리)
         function saveAnswers() {
+            if (!useLocalStorage) return;
+            
             try {
                 if (typeof(Storage) !== "undefined" && window.localStorage) {
                     localStorage.setItem('sexualHealthAnswers', JSON.stringify(answers));
@@ -1822,6 +1860,26 @@
                 }
             } catch (e) {
                 console.log('localStorage를 사용할 수 없습니다:', e.message);
+            }
+        }
+        
+        // 이전 답변 확인
+        function checkPreviousAnswers() {
+            if (Object.keys(answers).length > 0) {
+                const savedQuestions = Object.keys(answers).filter(key => key.startsWith('q')).length;
+                if (savedQuestions > 0) {
+                    const message = document.createElement('div');
+                    message.style.cssText = 'background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;';
+                    message.innerHTML = `
+                        <p style="margin: 0; color: #1976d2;">
+                            <strong>이전에 작성한 답변이 있습니다.</strong><br>
+                            <small>${savedQuestions}개 문항에 대한 답변이 저장되어 있습니다.</small>
+                        </p>
+                    `;
+                    const introSection = document.getElementById('intro-section');
+                    const firstBox = introSection.querySelector('.intro-box');
+                    introSection.insertBefore(message, firstBox);
+                }
             }
         }
     </script>
