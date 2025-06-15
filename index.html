@@ -1,16 +1,23 @@
-<!DOCTYPE html>
+.intro-box ul {
+            padding-left: 40px;
+        }
+        
+        .intro-box li {
+            margin-bottom: 8px;
+        }<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나의 성, 문제없을까?</title>
+    <!-- EmailJS 직접 로드 -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         // EmailJS 초기화는 스크립트 로드 후 자동으로
         window.addEventListener('load', function() {
             if (typeof emailjs !== 'undefined') {
                 try {
-                    emailjs.init("sU-ufg53yRT5YLRdB");  // Public Key 확인 필요
+                    emailjs.init("sU-ufg53yRT5YLRdB");
                     console.log('EmailJS 초기화 성공');
                 } catch (e) {
                     console.error('EmailJS 초기화 실패:', e);
@@ -345,51 +352,31 @@
 
         /* 특별관찰영역 - 개선된 디자인 */
         .special-observation {
-            background: linear-gradient(to right, #fff5f0, #fff3e6);
-            border-left: 4px solid #d35400;
+            background: linear-gradient(to right, #fff5f5, #ffe0e0);
+            border-left: 4px solid #ff6b6b;
             border-radius: 8px;
             padding: 25px;
             margin-top: 30px;
-            box-shadow: 0 3px 15px rgba(211,84,0,0.1);
+            box-shadow: 0 3px 15px rgba(255,107,107,0.1);
         }
 
         .special-observation h3 {
-            color: #d35400;
+            color: #c0392b;
             margin-bottom: 20px;
             font-size: 20px;
         }
 
         .observation-item {
-            margin-top: 20px;
-            margin-bottom: 20px;
-            padding: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
             background: white;
-            border-radius: 8px;
-            border-left: 3px solid #f39c12;
+            border-radius: 5px;
         }
 
         .observation-type {
             font-weight: bold;
-            font-size: 16px;
-            color: #e74c3c;
-            margin-bottom: 8px;
-        }
-
-        .observation-item p {
-            margin: 8px 0;
-            line-height: 1.6;
-        }
-
-        .observation-item p:first-of-type {
-            font-weight: 600;
-            font-size: 15px;
-            color: #2c3e50;
-        }
-
-        .observation-item p:last-of-type {
-            font-weight: 400;
-            font-size: 14px;
-            color: #34495e;
+            color: #856404;
+            margin-bottom: 5px;
         }
 
         /* 이메일 입력 - 개선된 디자인 */
@@ -581,19 +568,11 @@
             <div class="intro-box">
                 <p>※ 모든 응답은 익명으로 처리됩니다.<br>
                 ※ 만 19세 이상만 참여 가능합니다.<br>
-                ※ 약 15분 정도 소요됩니다.</p>
+                ※ 약 15분 정도 소요됩니다.<br>
+                <span style="color: #e74c3c;">※ 현재 환경에서는 임시저장이 지원되지 않습니다. 한 번에 완료해주세요.</span></p>
             </div>
 
-            <div style="text-align: center;">
-                <button class="btn btn-primary" onclick="nextSection()">검사 시작하기</button>
-                <p style="margin-top: 20px; font-size: 14px; color: #666;">
-                    이전에 작성한 답변이 있나요?<br>
-                    <a href="#" onclick="clearAllData(); return false;" style="color: #e74c3c; text-decoration: underline;">
-                        처음부터 새로 시작하기
-                    </a>
-                </p>
-            </div>
-            <button class="btn btn-secondary" onclick="clearAllData()" style="margin-left: 10px;">처음부터 새로 시작</button>
+            <button class="btn btn-primary" onclick="nextSection()">검사 시작하기</button>
         </div>
 
         <!-- 개인정보 동의 -->
@@ -953,9 +932,7 @@
 
             <div class="button-group">
                 <button class="btn btn-secondary" onclick="location.reload()">처음부터 다시</button>
-                <button class="btn" onclick="downloadResults()" style="background: #17a2b8; color: white;">
-                    📥 결과 다운로드
-                </button>
+                <button class="btn btn-info" onclick="downloadResults()" style="background: #17a2b8; color: white;">결과 다운로드</button>
             </div>
         </div>
     </div>
@@ -966,7 +943,6 @@
         let answers = {};
         let sectionOrder = [];
         let lastScaleScores = {};  // 결과 저장용
-        let useLocalStorage = true;  // localStorage 사용 여부
         
         // 검사 문항 데이터
         const questions = [
@@ -1042,9 +1018,6 @@
             
             // localStorage에서 저장된 답변 불러오기
             loadAnswers();
-            
-            // 이전 답변 확인 (메시지 비활성화)
-            // checkPreviousAnswers(); // 메시지 안 나오게 주석처리
         });
 
         // 검사 문항 섹션 생성
@@ -1056,36 +1029,38 @@
                 section.className = 'section';
                 section.id = `q${q.num}-section`;
                 
-                section.innerHTML = '<div class="question-container">' +
-                    '<div class="question-number">문항 ' + q.num + ' / ' + questions.length + '</div>' +
-                    '<div class="missing-indicator">⚠️ 이 문항에 응답해주세요</div>' +
-                    '<div class="question-text">' + q.text + '</div>' +
-                    '<div class="radio-group">' +
-                        '<div class="radio-item">' +
-                            '<input type="radio" id="q' + q.num + '_1" name="q' + q.num + '" value="1" onchange="selectAnswer(' + q.num + ', 1)">' +
-                            '<label for="q' + q.num + '_1">전혀 그렇지 않다</label>' +
-                        '</div>' +
-                        '<div class="radio-item">' +
-                            '<input type="radio" id="q' + q.num + '_2" name="q' + q.num + '" value="2" onchange="selectAnswer(' + q.num + ', 2)">' +
-                            '<label for="q' + q.num + '_2">그렇지 않다</label>' +
-                        '</div>' +
-                        '<div class="radio-item">' +
-                            '<input type="radio" id="q' + q.num + '_3" name="q' + q.num + '" value="3" onchange="selectAnswer(' + q.num + ', 3)">' +
-                            '<label for="q' + q.num + '_3">보통이다</label>' +
-                        '</div>' +
-                        '<div class="radio-item">' +
-                            '<input type="radio" id="q' + q.num + '_4" name="q' + q.num + '" value="4" onchange="selectAnswer(' + q.num + ', 4)">' +
-                            '<label for="q' + q.num + '_4">약간 그렇다</label>' +
-                        '</div>' +
-                        '<div class="radio-item">' +
-                            '<input type="radio" id="q' + q.num + '_5" name="q' + q.num + '" value="5" onchange="selectAnswer(' + q.num + ', 5)">' +
-                            '<label for="q' + q.num + '_5">매우 그렇다</label>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="button-group">' +
-                    '<button class="btn btn-secondary" onclick="previousSection()">이전</button>' +
-                '</div>';
+                section.innerHTML = `
+                    <div class="question-container">
+                        <div class="question-number">문항 ${q.num} / ${questions.length}</div>
+                        <div class="missing-indicator">⚠️ 이 문항에 응답해주세요</div>
+                        <div class="question-text">${q.text}</div>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_1" name="q${q.num}" value="1" onchange="selectAnswer(${q.num}, 1)">
+                                <label for="q${q.num}_1">전혀 그렇지 않다</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_2" name="q${q.num}" value="2" onchange="selectAnswer(${q.num}, 2)">
+                                <label for="q${q.num}_2">그렇지 않다</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_3" name="q${q.num}" value="3" onchange="selectAnswer(${q.num}, 3)">
+                                <label for="q${q.num}_3">보통이다</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_4" name="q${q.num}" value="4" onchange="selectAnswer(${q.num}, 4)">
+                                <label for="q${q.num}_4">약간 그렇다</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="q${q.num}_5" name="q${q.num}" value="5" onchange="selectAnswer(${q.num}, 5)">
+                                <label for="q${q.num}_5">매우 그렇다</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-secondary" onclick="previousSection()">이전</button>
+                    </div>
+                `;
                 
                 container.appendChild(section);
                 sectionOrder.push(`q${q.num}-section`);
@@ -1460,19 +1435,19 @@
                         obsContent += `
                             <div class="observation-item">
                                 <div class="observation-type">${obs.type} ${obs.detail}</div>
-                                <p>${obs.advice}</p>
+                                <p>: ${obs.advice}</p>
                             </div>
                         `;
                     });
                 }
                 
                 if (risks.length > 0) {
-                    obsContent += '<h4 style="margin-top: 25px; color: #e74c3c; font-size: 18px;">주의가 필요한 응답</h4>';
+                    obsContent += '<h4 style="margin-top: 20px; color: #e74c3c;">주의가 필요한 응답</h4>';
                     risks.forEach(risk => {
                         obsContent += `
-                            <div class="observation-item" style="background: #fef9e7; border-left-color: #f39c12;">
-                                <p style="font-weight: 600; color: #d35400; margin-bottom: 8px;">"${risk.question}"</p>
-                                <p style="color: #8b4513;">→ ${risk.message}</p>
+                            <div class="observation-item" style="background: #ffe6e6;">
+                                <p style="font-size: 14px; margin-bottom: 5px;">"${risk.question}"</p>
+                                <p style="color: #e74c3c;">• ${risk.message}</p>
                             </div>
                         `;
                     });
@@ -1481,18 +1456,19 @@
                 document.getElementById('observation-content').innerHTML = obsContent;
             }
             
-            // 모든 섹션 숨기기
+            // 현재 섹션 숨기기
+            console.log('현재 섹션 인덱스:', currentSection);
             const allSections = document.querySelectorAll('.section');
             allSections.forEach(section => {
                 section.classList.remove('active');
             });
             
             // 결과 섹션 표시
+            console.log('결과 섹션 표시');
             const resultSection = document.getElementById('result-section');
             if (resultSection) {
                 resultSection.classList.add('active');
                 window.scrollTo(0, 0);
-                console.log('결과 섹션 표시 완료');
             } else {
                 console.error('결과 섹션을 찾을 수 없습니다');
             }
@@ -1569,23 +1545,10 @@
             const detailedResult = generateDetailedResult();
             
             // EmailJS로 전송
-            const templateParams = {
+            emailjs.send("service_ydqsoms", "template_pqvaobm", {
                 to_email: email,
-                from_name: '나의 성, 문제없을까?',
-                user_name: detailedResult.user_name,
-                test_date: detailedResult.test_date,
-                overall_level: detailedResult.overall_level,
-                overall_content: detailedResult.overall_content,
-                overall_recommendation: detailedResult.overall_recommendation,
-                scale_results: detailedResult.scale_results,
-                special_observations: detailedResult.special_observations || '',
-                detailed_interpretations: detailedResult.detailed_interpretations
-            };
-            
-            console.log('전송할 데이터:', templateParams);
-            
-            emailjs.send("service_ydqsoms", "template_pqvaobm", templateParams)
-            .then(function(response) {
+                ...detailedResult  // 모든 결과 데이터 전달
+            }).then(function(response) {
                 document.getElementById('email-loading').style.display = 'none';
                 document.getElementById('email-success').classList.add('show');
                 console.log('이메일 전송 성공:', response);
@@ -1593,7 +1556,6 @@
                 document.getElementById('email-loading').style.display = 'none';
                 document.getElementById('email-error').classList.add('show');
                 console.error('이메일 전송 실패:', error);
-                alert('이메일 전송 실패: ' + JSON.stringify(error));
             });
         }
 
@@ -1773,37 +1735,6 @@
             calculateResults();
         }
         
-        // 모든 데이터 초기화
-        function clearAllData() {
-            if (confirm('지금까지 입력한 답변을 모두 지우고 새로 시작하시겠습니까?')) {
-                // 답변 초기화
-                answers = {};
-                
-                // localStorage 삭제
-                try {
-                    localStorage.removeItem('sexualHealthAnswers');
-                } catch (e) {
-                    console.log('localStorage 삭제 실패:', e);
-                }
-                
-                // 모든 라디오 버튼 해제
-                const radios = document.querySelectorAll('input[type="radio"]');
-                radios.forEach(radio => radio.checked = false);
-                
-                // 모든 체크박스 해제
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(checkbox => checkbox.checked = false);
-                
-                // 첫 번째 섹션으로 돌아가기
-                const allSections = document.querySelectorAll('.section');
-                allSections.forEach(section => section.classList.remove('active'));
-                currentSection = 0;
-                document.getElementById('intro-section').classList.add('active');
-                
-                alert('모든 답변이 초기화되었습니다. 새로 시작해주세요!');
-            }
-        }
-        
         // 결과 다운로드
         function downloadResults() {
             const resultText = generateTextResult();
@@ -1854,8 +1785,6 @@
 
         // localStorage 저장/불러오기 (안전하게 처리)
         function saveAnswers() {
-            if (!useLocalStorage) return;
-            
             try {
                 if (typeof(Storage) !== "undefined" && window.localStorage) {
                     localStorage.setItem('sexualHealthAnswers', JSON.stringify(answers));
@@ -1881,12 +1810,6 @@
             } catch (e) {
                 console.log('localStorage를 사용할 수 없습니다:', e.message);
             }
-        }
-        
-        // 이전 답변 확인 (비활성화)
-        function checkPreviousAnswers() {
-            // 메시지 안 나오게 비활성화
-            return;
         }
     </script>
 </body>
