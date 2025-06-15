@@ -764,7 +764,7 @@
 
         <!-- 결과 섹션 -->
         <div class="section" id="result-section">
-            <h1>검사 결과</h1>
+            <h1>나의 성, 문제없을까? - 검사 결과</h1>
             
             <!-- 종합 평가 -->
             <div class="result-section" id="overall-result">
@@ -1614,7 +1614,7 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `나의 성, 문제없을까?_${new Date().toLocaleDateString('ko-KR').replace(/\./g, '')}.txt`;
+            a.download = `나의성문제없을까_결과_${new Date().toLocaleDateString('ko-KR').replace(/\./g, '')}.txt`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -1624,7 +1624,7 @@
         // 텍스트 결과 생성
         function generateTextResult() {
             const result = generateDetailedResult();
-            let text = '나의 성, 문제없을까?\n';
+            let text = '나의 성, 문제없을까? - 검사 결과\n';
             text += '=' .repeat(50) + '\n\n';
             text += `검사일시: ${result.test_date}\n\n`;
             
