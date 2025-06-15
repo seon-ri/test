@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+.intro-box ul {
+            padding-left: 40px;
+        }
+        
+        .intro-box li {
+            margin-bottom: 8px;
+        }<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -28,6 +34,7 @@
             --secondary-color: #2ecc71;
             --danger-color: #e74c3c;
             --warning-color: #f39c12;
+            --warning-light: #ff7979;  /* 더 예쁜 주황색 */
             --success-color: #27ae60;
             --info-color: #3498db;
             --light-bg: #f5f5f5;
@@ -108,6 +115,14 @@
         .intro-box h3 {
             color: var(--primary-color);
             margin-bottom: 10px;
+        }
+
+        .intro-box ul {
+            padding-left: 40px;
+        }
+        
+        .intro-box li {
+            margin-bottom: 8px;
         }
 
         /* 문항 스타일 */
@@ -258,7 +273,27 @@
             cursor: pointer;
         }
 
-        /* 결과 스타일 */
+        /* 결과 스타일 - 개선된 블록 레이아웃 */
+        .result-block {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .result-block:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .result-block h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
         .result-section {
             margin-bottom: 30px;
             padding: 20px;
@@ -311,22 +346,24 @@
         }
 
         .scale-bar.good { background: var(--success-color); }
-        .scale-bar.caution { background: var(--warning-color); }
-        .scale-bar.warning { background: #ff6b6b; }
+        .scale-bar.caution { background: #ffb142; }  /* 부드러운 노란색 */
+        .scale-bar.warning { background: #ff6b6b; }  /* 부드러운 빨간색 */
         .scale-bar.danger { background: var(--danger-color); }
 
-        /* 특별관찰영역 */
+        /* 특별관찰영역 - 개선된 디자인 */
         .special-observation {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
+            background: linear-gradient(to right, #fff5f5, #ffe0e0);
+            border-left: 4px solid #ff6b6b;
             border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 3px 15px rgba(255,107,107,0.1);
         }
 
         .special-observation h3 {
-            color: #856404;
-            margin-bottom: 15px;
+            color: #c0392b;
+            margin-bottom: 20px;
+            font-size: 20px;
         }
 
         .observation-item {
@@ -342,21 +379,87 @@
             margin-bottom: 5px;
         }
 
-        /* 이메일 입력 */
+        /* 이메일 입력 - 개선된 디자인 */
         .email-section {
-            background: #e3f2fd;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            color: white;
+            text-align: center;
+        }
+
+        .email-section h3 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .email-section p {
+            font-size: 18px;
+            margin-bottom: 25px;
+            opacity: 0.95;
+        }
+
+        .email-benefit {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .benefit-item {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
             border-radius: 8px;
-            padding: 20px;
-            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .benefit-item h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .benefit-item p {
+            font-size: 14px;
+            margin: 0;
+            opacity: 0.9;
         }
 
         .email-input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
+            max-width: 400px;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
             font-size: 16px;
-            margin-bottom: 15px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-cta {
+            background: #2ecc71;
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(46,204,113,0.4);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-cta:hover {
+            background: #27ae60;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(46,204,113,0.5);
         }
 
         /* 반응형 */
@@ -379,12 +482,14 @@
             }
         }
 
-        /* 알림 메시지 */
+        /* 알림 메시지 - 개선된 디자인 */
         .alert {
             padding: 15px 20px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin: 20px auto;
+            max-width: 400px;
             display: none;
+            text-align: center;
         }
 
         .alert.show {
@@ -398,15 +503,15 @@
         }
 
         .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
         }
 
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
         }
 
         /* 로딩 스피너 */
@@ -468,7 +573,6 @@
             </div>
 
             <button class="btn btn-primary" onclick="nextSection()">검사 시작하기</button>
-            <button class="btn btn-warning" onclick="testMode()" style="background: #ffc107; color: #212529; margin-left: 10px;">테스트 모드 (결과 바로보기)</button>
         </div>
 
         <!-- 개인정보 동의 -->
@@ -766,14 +870,14 @@
         <div class="section" id="result-section">
             <h1>나의 성, 문제없을까? - 검사 결과</h1>
             
-            <!-- 종합 평가 -->
-            <div class="result-section" id="overall-result">
+            <!-- 종합 평가 블록 -->
+            <div class="result-block" id="overall-result">
                 <!-- 동적으로 생성 -->
             </div>
 
-            <!-- 척도별 점수 -->
-            <div class="result-section">
-                <h2>영역별 상세 결과</h2>
+            <!-- 척도별 점수 블록 -->
+            <div class="result-block">
+                <h2>📊 영역별 상세 결과</h2>
                 <div id="scale-results">
                     <!-- 동적으로 생성 -->
                 </div>
@@ -781,24 +885,45 @@
 
             <!-- 특별 관찰 영역 -->
             <div class="special-observation" id="special-observation" style="display: none;">
-                <h3>【특별 관찰 영역】</h3>
+                <h3>⚠️ 특별 관찰 영역</h3>
                 <div id="observation-content">
                     <!-- 동적으로 생성 -->
                 </div>
             </div>
 
-            <!-- 이메일 전송 -->
+            <!-- 이메일 전송 - 개선된 디자인 -->
             <div class="email-section">
-                <h3>상세 결과 받기</h3>
-                <p>이메일 주소를 입력하시면 더 자세한 해석과 맞춤형 조언을 보내드립니다.</p>
-                <input type="email" class="email-input" id="email-input" placeholder="이메일 주소 입력">
-                <button class="btn btn-primary" onclick="sendDetailedResult()">상세 결과 받기</button>
+                <h3>🎯 맞춤형 상세 분석을 받아보세요!</h3>
+                <p>지금 바로 이메일로 받는 혜택</p>
+                
+                <div class="email-benefit">
+                    <div class="benefit-item">
+                        <h4>📊 상세 분석</h4>
+                        <p>6개 영역별 깊이있는 해석</p>
+                    </div>
+                    <div class="benefit-item">
+                        <h4>💡 맞춤 조언</h4>
+                        <p>당신만을 위한 구체적 가이드</p>
+                    </div>
+                    <div class="benefit-item">
+                        <h4>📈 개선 방법</h4>
+                        <p>단계별 실천 프로그램</p>
+                    </div>
+                </div>
+                
+                <input type="email" class="email-input" id="email-input" placeholder="이메일 주소를 입력하세요">
+                <button class="btn-cta" onclick="sendDetailedResult()">무료로 상세 결과 받기 →</button>
+                
+                <p style="font-size: 14px; margin-top: 15px; opacity: 0.8;">
+                    * 100% 무료, 개인정보는 안전하게 보호됩니다
+                </p>
+                
                 <div class="loading" id="email-loading">
                     <div class="spinner"></div>
                     <p>전송 중...</p>
                 </div>
                 <div class="alert alert-success" id="email-success">
-                    이메일이 성공적으로 전송되었습니다. 받은 편지함을 확인해주세요.
+                    ✅ 이메일이 성공적으로 전송되었습니다. 받은 편지함을 확인해주세요.
                 </div>
                 <div class="alert alert-danger" id="email-error">
                     이메일 전송에 실패했습니다. 다시 시도해주세요.
@@ -1139,7 +1264,7 @@
             if (veryHighScores > 0) {
                 return {
                     level: "danger",
-                    icon: "🔴",
+                    icon: "🚨",
                     title: "위험 - 즉시 개입",
                     content: "특정 영역에서 성적 인식 및 행동 조절에 매우 높은 수준의 어려움이 나타나고 있습니다. 신속히 전문적 도움이 필요한 상태입니다.",
                     recommendation: "가까운 정신건강복지센터 즉시 연락, 응급 상황 시 1577-0199 (정신건강 위기상담), 이번 주 내로 전문가 상담 필수"
@@ -1147,7 +1272,7 @@
             } else if (highScores >= 3) {
                 return {
                     level: "warning",
-                    icon: "🟠",
+                    icon: "⚠️",
                     title: "경고 - 상담 권장",
                     content: "여러 영역에서 동시에 주의 신호가 나타나고 있습니다. 심층적인 자기 탐색 또는 전문가 상담을 권장합니다.",
                     recommendation: "전문 상담 필요, 미루지 말고 빠른 시일 내 상담 예약"
@@ -1155,7 +1280,7 @@
             } else if (highScores >= 1) {
                 return {
                     level: "caution",
-                    icon: "🟡",
+                    icon: "💡",
                     title: "주의 - 관찰 필요",
                     content: "특정 영역에서 개선이 필요한 부분이 발견되었습니다. 당장 문제가 있는 것은 아니지만, 자기 점검과 예방적 인식이 필요합니다.",
                     recommendation: "높게 나온 영역을 중심으로 자기 관찰, 필요시 상담 고려"
@@ -1163,7 +1288,7 @@
             } else {
                 return {
                     level: "good",
-                    icon: "🟢",
+                    icon: "✅",
                     title: "안정 - 건강한 상태",
                     content: "전반적으로 건강한 성적 인식과 태도를 보이며, 자율적인 통제력이 양호한 상태입니다. 현재의 건강한 상태를 유지하시기 바랍니다.",
                     recommendation: "파트너와의 지속적인 소통, 정기적인 자기 성찰, 건강한 관계 유지를 위한 노력 지속"
@@ -1263,12 +1388,15 @@
             
             // 종합 평가
             document.getElementById('overall-result').innerHTML = `
+                <h2>📋 종합 평가</h2>
                 <div class="result-header">
                     <div class="result-icon">${overall.icon}</div>
                     <div>
-                        <h2>${overall.title}</h2>
+                        <h3>${overall.title}</h3>
                         <p>${overall.content}</p>
-                        <p style="margin-top: 10px; font-weight: bold;">${overall.recommendation}</p>
+                        <p style="margin-top: 15px; padding: 15px; background: rgba(52,152,219,0.1); border-radius: 8px; font-weight: 500;">
+                            💡 <strong>권장사항:</strong> ${overall.recommendation}
+                        </p>
                     </div>
                 </div>
             `;
