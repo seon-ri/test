@@ -1022,7 +1022,6 @@
 
        // DOM이 로드되면 초기화
         document.addEventListener('DOMContentLoaded', function() {
-	console.log("컨테이너 실제 값:", container);
             // EmailJS 로드 확인 및 초기화
             if (typeof emailjs !== 'undefined') {
                 try {
@@ -1071,6 +1070,7 @@
         // 검사 문항 섹션 생성
         function createQuestionSections() {
             const container = document.getElementById('question-sections');
+	console.log("컨테이너 실제 값:", container);
             
             questions.forEach((q, index) => {
                 const section = document.createElement('div');
