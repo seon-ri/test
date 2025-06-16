@@ -24,6 +24,11 @@
             }
         });
     </script>
+	// 전역에 최근 계산 결과 보관용
+let lastScaleScores = {};
+let lastSpecialObservations = [];
+let lastRiskItems = [];
+	
     <style>
         /* CSS 변수로 색상 관리 - 쉽게 수정 가능 */
         :root {
@@ -1298,7 +1303,14 @@
                 // 위험 문항 체크
                 const riskItems = checkRiskItems();
                 console.log('위험 문항:', riskItems);
-                
+		    
+    // ▶ 전역 변수에 저장
+    lastScaleScores         = scaleScores;
+    lastSpecialObservations = specialObservations;
+    lastRiskItems           = riskItems;
+
+    showResults(overallResult, scaleScores, specialObservations, riskItems);
+		    
                 // 결과 표시
                 showResults(overallResult, scaleScores, specialObservations, riskItems);
                 
@@ -1689,210 +1701,89 @@
         }
 
         
-        // 상세 해석 생성
-        function generateDetailedInterpretations(scaleScores) {
-            let html = '';
-            
-            for (const [scale, score] of Object.entries(scales)) {
-                const level = getScaleLevel(parseFloat(score));
-                const detailedInfo = getDetailedScaleInfo(scale, level);
-                
-                html += `
-                    <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                        <h3>${scale} (${score}점)</h3>
-                        <p><strong>상태:</strong> ${detailedInfo.status}</p>
-                        <p><strong>핵심 메시지:</strong> ${detailedInfo.core}</p>
-                        <p><strong>실천 과제:</strong></p>
-                        <ul>${detailedInfo.tasks}</ul>
+    // 상세 결과 객체를 만들어 반환
+function generateDetailedResult() {
+    // ① 저장해 둔 값 불러오기
+    const scaleScores         = lastScaleScores;
+    const specialObservations = lastSpecialObservations;
+    const riskItems           = lastRiskItems;
+    const overallResult       = getOverallResult(scaleScores);
+
+    // ② 기본 구조
+    const result = {
+        user_name: answers.gender === '남성' ? '선생님' : answers.gender === '여성' ? '선생님' : '고객님',
+        test_date: new Date().toLocaleString('ko-KR'),
+        overall_level: overallResult.icon + ' ' + overallResult.title,
+        overall_content: overallResult.content,
+        overall_recommendation: overallResult.recommendation,
+        scale_results: '',
+        special_observations: '',
+        detailed_interpretations: ''
+    };
+
+    // ③ 척도별 결과 HTML
+    let scaleHTML = '';
+    for (const [scale, score] of Object.entries(scaleScores)) {
+        const level = getScaleLevel(parseFloat(score));
+        const levelText  = { good:'양호', caution:'주의', warning:'집중관리', danger:'즉시개입' }[level];
+        const interpretation = getScaleInterpretation(scale, level);
+        scaleHTML += `
+            <div class="scale-item">
+                <strong>${scale}</strong>: ${score}점<br>
+                <span class="${level}">${levelText}</span><br>
+                <small>${interpretation}</small>
+            </div>
+        `;
+    }
+    result.scale_results = scaleHTML;
+
+    // ④ 특별 관찰 영역
+    if (specialObservations.length) {
+        let obsHTML = '<div class="special-observation"><h3>특별 관찰 영역</h3>';
+        specialObservations.forEach(o => {
+            obsHTML += `
+                <div class="observation-item">
+                  <div class="observation-type">${o.type} ${o.detail}</div>
+                  <p>${o.advice}</p>
+                </div>
+            `;
+        });
+        if (riskItems.length) {
+            obsHTML += '<h4>⚠️ 주의가 필요한 응답</h4>';
+            riskItems.forEach(r => {
+                obsHTML += `
+                    <div class="observation-item">
+                      <p style="font-weight:600;">"${r.question}"</p>
+                      <p>→ ${r.message}</p>
                     </div>
                 `;
-            }
-            
-            return html;
+            });
         }
-        
-        // 상세 척도 정보
-        function getDetailedScaleInfo(scale, level) {
-            const info = {
-                "성인식 왜곡": {
-                    good: {
-                        status: "상대방의 의사를 정확히 파악하고 존중합니다. 동의의 중요성을 잘 이해하고 있으며, 건강한 경계를 유지합니다.",
-                        core: "명확한 소통으로 서로를 존중합니다",
-                        tasks: "<li>비언어적 신호도 세심히 관찰하기</li><li>상대방의 편안함 우선시하기</li><li>일상에서도 경청 습관 유지하기</li>"
-                    },
-                    caution: {
-                        status: "때때로 상대방의 신호를 자의적으로 해석하는 경향이 있습니다. 특히 애매한 상황에서 자신에게 유리하게 해석할 위험이 있습니다.",
-                        core: "확실하지 않으면 물어보세요",
-                        tasks: "<li>'괜찮아?'가 아닌 '하고 싶어?' 질문하기</li><li>거절을 자연스럽게 받아들이기 연습</li><li>추측 대신 확인하는 습관 만들기</li>"
-                    },
-                    warning: {
-                        status: "동의와 거부의 신호를 자주 오해하며, 상대방의 불편함을 알아차리지 못합니다.",
-                        core: "당신의 해석이 틀릴 수 있습니다",
-                        tasks: "<li>모든 성적 상황에서 명시적 동의 구하기</li><li>상대방 입장 일기 쓰기 (주 3회)</li><li>성인지 감수성 교육 참여</li>"
-                    },
-                    danger: {
-                        status: "성적 상황에 대한 인식이 심각하게 왜곡되어 있습니다.",
-                        core: "지금 당장 도움이 필요합니다",
-                        tasks: "<li>즉시 전문가 상담 예약</li><li>모든 성적 접근 중단</li><li>인지행동치료 프로그램 등록</li>"
-                    }
-                }
-                // 다른 척도들도 추가...
-            };
-            
-            // 해당 척도와 레벨의 정보 반환
-            return info[scale] && info[scale][level] ? info[scale][level] : {
-                status: "정보를 준비 중입니다.",
-                core: "전문가와 상담하세요.",
-                tasks: "<li>전문가 상담 권장</li>"
-            };
-        }
+        obsHTML += '</div>';
+        result.special_observations = obsHTML;
+    }
 
-        // Google Sheets 저장
-        function saveToGoogleSheets() {
-            // Google Apps Script URL이 제공되면 아래 주석 해제하고 URL 입력
-            /*
-            const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
-            
-            // 데이터 준비
-            const data = {
-                timestamp: new Date().toISOString(),
-                ...answers
-            };
-            
-            fetch(scriptURL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => console.log('데이터 저장 성공'))
-            .catch(error => console.error('데이터 저장 실패:', error));
-            */
-            
-            console.log('Google Sheets 저장 기능은 URL 설정 후 사용 가능합니다.');
-        }
-        
-        // 테스트 모드
-        function testMode() {
-            console.log('테스트 모드 시작');
-            
-            // 모든 문항에 무작위 점수 입력
-            for(let i = 1; i <= 44; i++) {
-                if (i === 15) {
-                    answers[`q${i}`] = 3; // 주의점검 문항
-                } else if (i === 35) {
-                    answers[`q${i}`] = 4; // 주의점검 문항
-                } else {
-                    answers[`q${i}`] = Math.floor(Math.random() * 5) + 1; // 1-5 무작위
-                }
-            }
-            
-            // 인구통계 입력
-            answers.gender = '남성';
-            answers.age = '25-29세';
-            answers.marriage = '미혼';
-            answers.relationship = '현재 연애 중';
-            answers.education = '대학 졸업';
-            answers.job = '직장인';
-            answers.orientation = '이성애자';
-            answers.counseling = '없음';
-            
-            console.log('테스트 답변 생성 완료:', answers);
-            
-            // 바로 결과 계산
-            calculateResults();
-        }
-        
-        // 모든 데이터 초기화 (간소화)
-        function clearAllData() {
-            if (confirm('지금까지 입력한 답변을 모두 지우고 새로 시작하시겠습니까?')) {
-                // 답변 초기화
-                answers = {};
-                
-                // 모든 라디오 버튼 해제
-                const radios = document.querySelectorAll('input[type="radio"]');
-                radios.forEach(radio => radio.checked = false);
-                
-                // 모든 체크박스 해제
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(checkbox => checkbox.checked = false);
-                
-                // 첫 번째 섹션으로 돌아가기
-                const allSections = document.querySelectorAll('.section');
-                allSections.forEach(section => section.classList.remove('active'));
-                currentSection = 0;
-                document.getElementById('intro-section').classList.add('active');
-                
-                alert('모든 답변이 초기화되었습니다!');
-            }
-        }
-        
-        // 결과 다운로드
-        function downloadResults() {
-            const resultText = generateTextResult();
-            const blob = new Blob([resultText], { type: 'text/plain;charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `나의성, 문제없을까?_결과_${new Date().toLocaleDateString('ko-KR').replace(/\./g, '')}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        }
-        
-        // 텍스트 결과 생성
-        function generateTextResult() {
-            const result = generateDetailedResult();
-            let text = '나의 성, 문제없을까? - 검사 결과\n';
-            text += '=' .repeat(50) + '\n\n';
-            text += `검사일시: ${result.test_date}\n\n`;
-            
-            text += '【종합 평가】\n';
-            text += result.overall_level + '\n';
-            text += result.overall_content + '\n';
-            text += '권장사항: ' + result.overall_recommendation + '\n\n';
-            
-            text += '【영역별 결과】\n';
-            for (const [scale, score] of Object.entries(lastScaleScores)) {
-                const level = getScaleLevel(parseFloat(score));
-                text += `${scale}: ${score}점\n`;
-                text += `- ${getScaleInterpretation(scale, level)}\n\n`;
-            }
-            
-            if (result.special_observations) {
-                text += '【특별 관찰 영역】\n';
-                const temp = document.createElement('div');
-                temp.innerHTML = result.special_observations;
-                text += temp.textContent + '\n\n';
-            }
-            
-            text += '-' .repeat(50) + '\n';
-            text += '본 검사는 자기이해를 돕는 참고자료입니다.\n';
-            text += '전문적 도움이 필요한 경우 정신건강 전문가와 상담하세요.\n';
-            text += '정신건강 위기상담: 1577-0199\n';
-            
-            return text;
-        }
+    // ⑤ 상세 해석
+    result.detailed_interpretations = generateDetailedInterpretations(lastScaleScores);
+    
+    return result;
+}
 
-        // localStorage 저장/불러오기 (비활성화)
-        function saveAnswers() {
-            // localStorage 기능 비활성화 - 문제 해결을 위해 제거
-            return;
-        }
-
-        function loadAnswers() {
-            // localStorage 기능 비활성화 - 문제 해결을 위해 제거
-            return;
-        }
-        
-        // 이전 답변 확인 (비활성화)
-        function checkPreviousAnswers() {
-            // localStorage 기능 비활성화 - 문제 해결을 위해 제거
-            return;
-        }
-    </script>
-</body>
-</html>
+// 상세 해석용 HTML 생성 (scales → parameter명으로 변경)
+function generateDetailedInterpretations(scaleScores) {
+    let html = '';
+    for (const [scale, score] of Object.entries(scaleScores)) {
+        const level = getScaleLevel(parseFloat(score));
+        const info  = getDetailedScaleInfo(scale, level);
+        html += `
+            <div style="margin:20px 0; padding:15px; background:#f8f9fa; border-radius:8px;">
+                <h3>${scale} (${score}점)</h3>
+                <p><strong>상태:</strong> ${info.status}</p>
+                <p><strong>핵심 메시지:</strong> ${info.core}</p>
+                <p><strong>실천 과제:</strong></p>
+                <ul>${info.tasks}</ul>
+            </div>
+        `;
+    }
+    return html;
+}
