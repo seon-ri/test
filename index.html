@@ -1463,9 +1463,9 @@
             const scaleResults = document.getElementById('scale-results');
             scaleResults.innerHTML = '';
             
-            for (const [scale, score] of Object.entries(scalescores)) {
-                const level = getScaleLevel(parseFloat(scalescore));
-                const interpretation = getScaleInterpretation(scalescale, level);
+            for (const [scale, score] of Object.entries(scaleScores)) {
+                const level = getScaleLevel(parseFloat(score));
+                const interpretation = getScaleInterpretation(scale, level);
                 
                 scaleResults.innerHTML += `
                     <div class="scale-item">
@@ -1489,7 +1489,7 @@
                 let obsContent = '';
                 
                 if (specialobservations.length > 0) {
-                    observations.forEach(obs => {
+                    specialobservations.forEach(obs => {
                         obsContent += `
                             <div class="observation-item">
                                 <div class="observation-type">${obs.type} ${obs.detail}</div>
@@ -1499,13 +1499,13 @@
                     });
                 }
                 
-                if (riskitems.length > 0) {
+                if (riskItems.length > 0) {
                     obsContent += '<h4 style="margin-top: 25px; color: #e74c3c; font-size: 18px;">주의가 필요한 응답</h4>';
-                    riskitems.forEach(risk => {
+                    riskItems.forEach(risk => {
                         obsContent += `
                             <div class="observation-item" style="background: #fef9e7; border-left-color: #f39c12;">
                                 <p style="font-weight: 600; color: #d35400; margin-bottom: 8px;">"${risk.question}"</p>
-                                <p style="color: #8b4513;">→ ${riskitems.message}</p>
+                                <p style="color: #8b4513;">→ ${riskItems.message}</p>
                             </div>
                         `;
                     });
@@ -1647,13 +1647,13 @@
             
             // 이미 계산된 점수 사용
             const scales = lastScaleScores;
-            const overall = getOverallResult(scales);
-            const observations = getSpecialObservations(scales);
+            const overall = getOverallResult(scaleScores);
+            const observations = getSpecialObservations(scaleScores);
             
             // 종합 평가
-            result.overall_level = overallresult.icon + ' ' + overallresult.title;
-            result.overall_content = overallresult.content;
-            result.overall_recommendation = overallresult.recommendation;
+            result.overall_level = overallResult.icon + ' ' + overallResult.title;
+            result.overall_content = overallResult.content;
+            result.overall_recommendation = overallResult.recommendation;
             
             // 척도별 결과 HTML
             let scaleHTML = '';
@@ -1672,9 +1672,9 @@
             result.scale_results = scaleHTML;
             
             // 특별 관찰 영역
-            if (observations.length > 0) {
+            if (specialObservations.length > 0) {
                 let obsHTML = '';
-                observations.forEach(obs => {
+                specialObservations.forEach(obs => {
                     obsHTML += `
                         <div style="margin: 10px 0;">
                             <strong>${obs.type}</strong> ${obs.detail}<br>
@@ -1686,14 +1686,14 @@
             }
             
             // 상세 해석 생성
-            result.detailed_interpretations = generateDetailedInterpretations(scales);
+            result.detailed_interpretations = generateDetailedInterpretations(scaleScores);
             
             return result;
         }
 
         
         // 상세 해석 생성
-        function generateDetailedInterpretations(scales) {
+        function generateDetailedInterpretations(scaleScores) {
             let html = '';
             
             for (const [scale, score] of Object.entries(scales)) {
