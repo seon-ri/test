@@ -1286,10 +1286,23 @@
                 
                 // 결과 저장 (이메일 전송용)
                 lastScaleScores = scaleScores;
-                
-                // 종합 평가
-                const overallResult = getOverallResult(scaleScores);
-                console.log('종합 평가:', overallResult);
+
+// 여기에 디버깅 코드 추가
+console.log('🔍 scaleScores 확인:', scaleScores);
+console.log('🔍 scaleScores 타입:', typeof scaleScores);
+console.log('🔍 Object.values(scaleScores):', Object.values(scaleScores));
+
+console.log('⏰ getOverallResult 실행 시작');
+try {
+    const overallResult = getOverallResult(scaleScores);
+    console.log('✅ overallResult 성공:', overallResult);
+} catch (error) {
+    console.error('❌ getOverallResult 실행 중 에러:', error);
+}
+
+		    // 종합 평가
+               // const overallResult = getOverallResult(scaleScores);//
+              //  console.log('종합 평가:', overallResult);//
                 
                 // 특별 관찰 영역
                 const specialObservations = getSpecialObservations(scaleScores);
