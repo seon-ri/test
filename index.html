@@ -1058,7 +1058,7 @@
                 'demo5-section',  // 학력
                 'demo6-section',  // 직업
                 'demo7-section',  // 성적지향성
-                'demo8-section',   // 상담경험
+                'demo8-section'   // 상담경험
                 'result-section' //결과
             );
             
@@ -1439,7 +1439,11 @@
         // 결과 표시
         function showResults(overall, scores, observations, risks) {
             console.log('결과 표시 시작');
-            
+            console.log('✅ overall:', overall);
+	console.log('✅ scores:', scores);
+	console.log('✅ observations:', observations);
+	console.log('✅ risks:', risks); 
+
             // 종합 평가
             document.getElementById('overall-result').innerHTML = `
                 <h2>📋 종합 평가</h2>
