@@ -1482,14 +1482,14 @@
             }
             
             // 특별 관찰 영역
-            if (specialobservations.length > 0 || riskItems.length > 0) {
+            if (specialObservations.length > 0 || riskItems.length > 0) {
                 const obsDiv = document.getElementById('special-observation');
                 obsDiv.style.display = 'block';
                 
                 let obsContent = '';
                 
-                if (specialobservations.length > 0) {
-                    specialobservations.forEach(obs => {
+                if (specialObservations.length > 0) {
+                    specialObservations.forEach(obs => {
                         obsContent += `
                             <div class="observation-item">
                                 <div class="observation-type">${obs.type} ${obs.detail}</div>
@@ -1524,7 +1524,6 @@
             const resultSection = document.getElementById('result-section');
             if (resultSection) {
                 resultSection.classList.add('active');
-	   showResults(overallResult, scaleScores, specialObservations, riskItems);
                 currentSection = sectionOrder.indexOf('result-section');
                 window.scrollTo(0, 0);
                 console.log('결과 섹션 표시 완료');
