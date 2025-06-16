@@ -1293,8 +1293,9 @@ console.log('🔍 scaleScores 타입:', typeof scaleScores);
 console.log('🔍 Object.values(scaleScores):', Object.values(scaleScores));
 
 console.log('⏰ getOverallResult 실행 시작');
+let overallResult;  // 새로 추가
 try {
-    const overallResult = getOverallResult(scaleScores);
+    overallResult = getOverallResult(scaleScores);
     console.log('✅ overallResult 성공:', overallResult);
 } catch (error) {
     console.error('❌ getOverallResult 실행 중 에러:', error);
