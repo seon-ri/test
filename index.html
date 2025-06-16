@@ -1440,9 +1440,9 @@
         function showResults(overallResult, scaleScores, specialObservations, riskItems) {
             console.log('결과 표시 시작');
             console.log('✅ overallResult:', overallResult);
-	console.log('✅ scaleScores:', scaleScores);
-	console.log('✅ specialObservations:', specialObservations);
-	console.log('✅ riskItems:', riskItems); 
+	console.log('✅ scaleScores:', typeof scaleScores);
+	console.log('✅ specialObservations:', typeof specialObservations);
+	console.log('✅ riskItems:', typeof riskItems); 
           
             // 종합 평가
             document.getElementById('overall-result').innerHTML = `
@@ -1458,14 +1458,14 @@
                     </div>
                 </div>
             `;
-            }
+          
             // 척도별 점수
             const scaleResults = document.getElementById('scale-results');
             scaleResults.innerHTML = '';
             
-            for (const [scale, score] of Object.entries(scores)) {
-                const level = getScaleLevel(parseFloat(score));
-                const interpretation = getScaleInterpretation(scale, level);
+            for (const [scale, score] of Object.entries(scalescores)) {
+                const level = getScaleLevel(parseFloat(scalescore));
+                const interpretation = getScaleInterpretation(scalescale, level);
                 
                 scaleResults.innerHTML += `
                     <div class="scale-item">
@@ -1482,13 +1482,13 @@
             }
             
             // 특별 관찰 영역
-            if (observations.length > 0 || risks.length > 0) {
+            if (specialobservations.length > 0 || risks.length > 0) {
                 const obsDiv = document.getElementById('special-observation');
                 obsDiv.style.display = 'block';
                 
                 let obsContent = '';
                 
-                if (observations.length > 0) {
+                if (specialobservations.length > 0) {
                     observations.forEach(obs => {
                         obsContent += `
                             <div class="observation-item">
@@ -1499,13 +1499,13 @@
                     });
                 }
                 
-                if (risks.length > 0) {
+                if (riskitems.length > 0) {
                     obsContent += '<h4 style="margin-top: 25px; color: #e74c3c; font-size: 18px;">주의가 필요한 응답</h4>';
-                    risks.forEach(risk => {
+                    riskitems.forEach(risk => {
                         obsContent += `
                             <div class="observation-item" style="background: #fef9e7; border-left-color: #f39c12;">
                                 <p style="font-weight: 600; color: #d35400; margin-bottom: 8px;">"${risk.question}"</p>
-                                <p style="color: #8b4513;">→ ${risk.message}</p>
+                                <p style="color: #8b4513;">→ ${riskitems.message}</p>
                             </div>
                         `;
                     });
@@ -1583,6 +1583,7 @@
             
             return interpretations[scale][level];
         }
+		  }
 
         // 이메일 전송
         function sendDetailedResult() {
