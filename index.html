@@ -1482,7 +1482,7 @@
             }
             
             // 특별 관찰 영역
-            if (specialobservations.length > 0 || risks.length > 0) {
+            if (specialobservations.length > 0 || riskItems.length > 0) {
                 const obsDiv = document.getElementById('special-observation');
                 obsDiv.style.display = 'block';
                 
@@ -1505,7 +1505,7 @@
                         obsContent += `
                             <div class="observation-item" style="background: #fef9e7; border-left-color: #f39c12;">
                                 <p style="font-weight: 600; color: #d35400; margin-bottom: 8px;">"${risk.question}"</p>
-                                <p style="color: #8b4513;">→ ${riskItems.message}</p>
+                                <p style="color: #8b4513;">→ ${risk.message}</p>
                             </div>
                         `;
                     });
@@ -1657,7 +1657,7 @@
             
             // 척도별 결과 HTML
             let scaleHTML = '';
-            for (const [scale, score] of Object.entries(scales)) {
+            for (const [scale, score] of Object.entries(scaleScores)) {
                 const level = getScaleLevel(parseFloat(score));
                 const levelText = level === 'good' ? '양호' : level === 'caution' ? '주의' : level === 'warning' ? '집중관리' : '즉시개입';
                 const levelColor = level === 'good' ? 'good' : level === 'caution' ? 'caution' : level === 'warning' ? 'warning' : 'danger';
