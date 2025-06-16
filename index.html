@@ -1437,23 +1437,23 @@
         }
 
         // 결과 표시
-        function showResults(overall, scores, observations, risks) {
+        function showResults(overallResult, scaleScores, specialObservations, riskItems) {
             console.log('결과 표시 시작');
-            console.log('✅ overall:', overall);
-	console.log('✅ scores:', scores);
-	console.log('✅ observations:', observations);
-	console.log('✅ risks:', risks); 
+            console.log('✅ overallResult:', overallResult);
+	console.log('✅ scaleScores:', scaleScores);
+	console.log('✅ specialObservations:', specialObservations);
+	console.log('✅ riskItems:', riskItems); 
           }
             // 종합 평가
             document.getElementById('overall-result').innerHTML = `
                 <h2>📋 종합 평가</h2>
                 <div class="result-header">
-                    <div class="result-icon">${overall.icon}</div>
+                    <div class="result-icon">${overallResult.icon}</div>
                     <div>
-                        <h3>${overall.title}</h3>
-                        <p>${overall.content}</p>
+                        <h3>${overallResult.title}</h3>
+                        <p>${overallResult.content}</p>
                         <p style="margin-top: 15px; padding: 15px; background: rgba(52,152,219,0.1); border-radius: 8px; font-weight: 500;">
-                            💡 <strong>권장사항:</strong> ${overall.recommendation}
+                            💡 <strong>권장사항:</strong> ${overallResult.recommendation}
                         </p>
                     </div>
                 </div>
