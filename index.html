@@ -1115,16 +1115,21 @@
         }
 
         // 답변 선택
-        function selectAnswer(questionNum, value) {
-            answers[`q${questionNum}`] = value;
-            // localStorage 저장 기능 비활성화
-            // saveAnswers();
-            
-            // 자동으로 다음 문항으로
-            setTimeout(() => {
-                nextSection();
-            }, 300);
-        }
+	function selectAnswer(questionNum, value) {
+	    answers[`q${questionNum}`] = value;
+
+	    // 마지막 섹션이 아니라면 자동 이동
+	    if (currentSection < sectionOrder.length - 1) {
+	        setTimeout(() => {
+	            nextSection();
+	        }, 300);
+	    } else {
+	        // 마지막 문항일 경우: 검사 완료 버튼 기다림 or showResult()
+	        console.log("마지막 문항입니다. 다음 섹션으로 자동 이동하지 않음.");
+	        // 필요시 showResult() 호출 가능
+	        // showResult();
+	    }
+	}
 
         // 인구통계 답변 저장
         document.addEventListener('change', function(e) {
