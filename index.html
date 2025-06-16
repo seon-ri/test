@@ -24,11 +24,66 @@
             }
         });
     </script>
-	// 전역에 최근 계산 결과 보관용
+   // EmailJS 초기화
+  emailjs.init('sU-ufg53yRT5YLRdB');
+
+  // calculateResults() 정의
+  function calculateResults() {
+    // …기존 계산 로직…
+  }
+
+  // generateDetailedResult(), generateDetailedInterpretations() 등
+  function generateDetailedResult() {
+    // …코드…
+  }
+  function generateDetailedInterpretations(scaleScores) {
+    // …코드…
+  }
+
+  // sendEmail() 정의
+  function sendEmail() {
+    // …코드…
+  }
+  //
+		
+	<script defer>	
+		    // 전역 상태 관리
+let currentSectionIndex = 0;
 let lastScaleScores = {};
 let lastSpecialObservations = [];
 let lastRiskItems = [];
 	
+	// ② 섹션 전환 로직
+  let currentSectionIndex = 0;
+  const sections = document.querySelectorAll('.section');
+  sections.forEach((sec,i) => sec.classList.toggle('active', i===0));
+  function nextSection() {
+    sections[currentSectionIndex].classList.remove('active');
+    currentSectionIndex++;
+    if (currentSectionIndex < sections.length) {
+      sections[currentSectionIndex].classList.add('active');
+    } else {
+      calculateResults();
+    }
+  }
+
+  function nextSection(){
+    // 현재 섹션 숨기기
+    sections[currentSectionIndex].classList.remove('active');
+
+    // 인덱스 증가
+    currentSectionIndex++;
+
+    if (currentSectionIndex < sections.length) {
+      // 다음 섹션 보여주기
+      sections[currentSectionIndex].classList.add('active');
+    } else {
+      // 모든 섹션 끝 → 결과 계산
+      calculateResults();
+    }
+  }
+
+
     <style>
         /* CSS 변수로 색상 관리 - 쉽게 수정 가능 */
         :root {
